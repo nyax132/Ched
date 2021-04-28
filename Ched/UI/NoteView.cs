@@ -414,7 +414,7 @@ namespace Ched.UI
 
                     var airActions = Notes.AirActions.Reverse()
                         .SelectMany(q => q.ActionNotes.Where(r => visibleTick(q.StartTick + r.Offset)))
-                        .Select(q => GetClickableRectFromNotePosition(q.ParentNote.StartTick + q.Offset, q.ParentNote.ParentNote.LaneIndex, q.ParentNote.ParentNote.Width).OffsetInplace(0, -ShortNoteHeight)); // Offset the cursor changer hitbox
+                        .Select(q => GetClickableRectFromNotePosition(q.ParentNote.StartTick + q.Offset, q.ParentNote.ParentNote.LaneIndex, q.ParentNote.ParentNote.Width).OffsetInplace(0, -ShortNoteHeight)); // Offset hitbox for air action cursor changer 
 
                     var shortNotes = Enumerable.Empty<TappableBase>()
                         .Concat(Notes.Damages.Reverse())
@@ -520,7 +520,7 @@ namespace Ched.UI
                     {
                         foreach (var action in note.ActionNotes)
                         {
-                            // Offset the drag handler
+                            // Offset the click-hold-drag handler
                             RectangleF noteRect = GetClickableRectFromNotePosition(note.ParentNote.Tick + action.Offset, note.ParentNote.LaneIndex, note.ParentNote.Width).OffsetInplace(0, -ShortNoteHeight);
                             if (noteRect.Contains(scorePos))
                             {
@@ -1290,7 +1290,7 @@ namespace Ched.UI
                     {
                         foreach (var action in note.ActionNotes)
                         {
-                            // Offset erase hitbox for air actions
+                            // Offset erase handler
                             RectangleF rect = GetClickableRectFromNotePosition(note.StartTick + action.Offset, note.ParentNote.LaneIndex, note.ParentNote.Width).OffsetInplace(0, -ShortNoteHeight);
                             if (rect.Contains(scorePos))
                             {
@@ -1754,8 +1754,7 @@ namespace Ched.UI
             {
                 foreach (var note in action.ActionNotes)
                 {
-                    // dc.DrawAirAction(GetRectFromNotePosition(action.StartTick + note.Offset, action.ParentNote.LaneIndex, action.ParentNote.Width).Expand(-ShortNoteHeight * 0.28f));
-                    // Offset the drawn AirAction bar one ShortNoteHeight down to avoid overlap
+                    // Offset airAction drawing
                     RectangleF noteRect = GetRectFromNotePosition(action.StartTick + note.Offset, action.ParentNote.LaneIndex, action.ParentNote.Width).OffsetInplace(0, -ShortNoteHeight).Expand(-ShortNoteHeight * 0.1f);
                     dc.DrawAirAction(noteRect);
                 }
