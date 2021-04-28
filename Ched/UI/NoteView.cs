@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -1209,7 +1209,7 @@ namespace Ched.UI
 
             var eraseSubscription = mouseDown
                 .Where(p => Editable)
-                .Where(p => p.Button == MouseButtons.Left && EditMode == EditMode.Erase)
+                .Where(p => (p.Button == MouseButtons.Left && EditMode == EditMode.Erase) || (p.Button == MouseButtons.Right && EditMode == EditMode.Edit))
                 .SelectMany(p =>
                 {
                     Matrix startMatrix = GetDrawingMatrix(new Matrix());
@@ -1416,7 +1416,7 @@ namespace Ched.UI
 
             var selectSubscription = mouseDown
                 .Where(p => Editable)
-                .Where(p => p.Button == MouseButtons.Left && EditMode == EditMode.Select)
+                .Where(p => (p.Button == MouseButtons.Left && EditMode == EditMode.Select) || p.Button == MouseButtons.Middle)
                 .SelectMany(p =>
                 {
                     Matrix startMatrix = GetDrawingMatrix(new Matrix());
@@ -1532,12 +1532,12 @@ namespace Ched.UI
 
         protected override void OnMouseDoubleClick(MouseEventArgs e)
         {
-            base.OnMouseDoubleClick(e);
+            // base.OnMouseDoubleClick(e);
 
-            if (e.Button == MouseButtons.Right)
-            {
-                EditMode = EditMode == EditMode.Edit ? EditMode.Select : EditMode.Edit;
-            }
+            // if (e.Button == MouseButtons.Right)
+            // {
+            //    EditMode = EditMode == EditMode.Edit ? EditMode.Select : EditMode.Edit;
+            //}
         }
 
         protected override void OnPaint(PaintEventArgs pe)
