@@ -318,4 +318,7 @@
   <data name="InsertSingleBlankAtBeginning" xml:space="preserve">
     <value>先頭に1小節の空白を挿入する</value>
   </data>
+  <data name="FollowWhenPlaying" xml:space="preserve">
+    <value>再生時にスクロール</value>
+  </data>
 </root>

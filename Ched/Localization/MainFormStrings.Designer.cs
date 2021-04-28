@@ -286,6 +286,15 @@ namespace Ched.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 再生時にスクロール.
+        /// </summary>
+        public static string FollowWhenPlaying {
+            get {
+                return ResourceManager.GetString("FollowWhenPlaying", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ヘルプを開く.
         /// </summary>
         public static string Help {

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -92,7 +92,8 @@ namespace Ched.UI
                 Dock = DockStyle.Fill,
                 UnitBeatHeight = ApplicationSettings.Default.UnitBeatHeight,
                 UnitLaneWidth = ApplicationSettings.Default.UnitLaneWidth,
-                InsertAirWithAirAction = ApplicationSettings.Default.InsertAirWithAirAction
+                InsertAirWithAirAction = ApplicationSettings.Default.InsertAirWithAirAction,
+                IsFollowWhenPlaying = ApplicationSettings.Default.IsFollowWhenPlaying,
             };
 
             PreviewManager = new SoundPreviewManager(this);
@@ -685,6 +686,17 @@ namespace Ched.UI
                 Checked = ApplicationSettings.Default.IsPreviewAbortAtLastNote
             };
 
+            var isFollowWhenPlayingItem = new MenuItem(MainFormStrings.FollowWhenPlaying, (s, e) =>
+            {
+                var item = s as MenuItem;
+                item.Checked = !item.Checked;
+                noteView.IsFollowWhenPlaying = item.Checked;
+                ApplicationSettings.Default.IsFollowWhenPlaying = item.Checked;
+            })
+            {
+                Checked = ApplicationSettings.Default.IsFollowWhenPlaying
+            };
+
             var playItem = new MenuItem(MainFormStrings.Play, (s, e) =>
             {
                 if (string.IsNullOrEmpty(CurrentMusicSource?.FilePath))
@@ -704,12 +716,15 @@ namespace Ched.UI
                     return;
                 }
 
-                int startTick = noteView.CurrentTick;
+                int startHeadTick = noteView.HeadTick;
+                int startCurrentTick = noteView.CurrentTick;
                 void lambda(object p, EventArgs q)
                 {
                     isAbortAtLastNoteItem.Enabled = true;
                     PreviewManager.Finished -= lambda;
-                    noteView.CurrentTick = startTick;
+                    noteView.Playing = false;
+                    noteView.CurrentTick = startCurrentTick;
+                    noteView.HeadTick = startHeadTick;
                     noteView.Editable = CanEdit;
                 }
 
@@ -717,9 +732,10 @@ namespace Ched.UI
                 {
                     CommitChanges();
                     var context = new SoundPreviewContext(ScoreBook.Score, CurrentMusicSource);
-                    if (!PreviewManager.Start(context, startTick)) return;
+                    if (!PreviewManager.Start(context, startCurrentTick)) return;
                     isAbortAtLastNoteItem.Enabled = false;
                     PreviewManager.Finished += lambda;
+                    noteView.Playing = true;
                     noteView.Editable = CanEdit;
                 }
                 catch (Exception ex)
@@ -736,7 +752,8 @@ namespace Ched.UI
             var playMenuItems = new MenuItem[]
             {
                 playItem, stopItem, new MenuItem("-"),
-                isAbortAtLastNoteItem
+                isAbortAtLastNoteItem,
+                isFollowWhenPlayingItem
             };
 
             var helpMenuItems = new MenuItem[]

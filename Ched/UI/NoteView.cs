@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -47,6 +47,8 @@ namespace Ched.UI
         private NoteType newNoteType = NoteType.Tap;
         private AirDirection airDirection = new AirDirection(VerticalAirDirection.Up, HorizontalAirDirection.Center);
         private bool isNewSlideStepVisible = true;
+        private bool playing = false;
+        private bool isFollowWhenPlaying = false;
 
         /// <summary>
         /// 小節の区切り線の色を設定します。
@@ -245,10 +247,16 @@ namespace Ched.UI
             set
             {
                 currentTick = value;
-                if (currentTick < HeadTick || currentTick > TailTick)
+                if (Playing && IsFollowWhenPlaying)
                 {
-                    HeadTick = currentTick;
-                    DragScroll?.Invoke(this, EventArgs.Empty);
+                    HeadTick = currentTick - (int)((TailTick - HeadTick) * 0.1);
+                } else
+                {
+                    if (currentTick < HeadTick || currentTick > TailTick)
+                    {
+                        HeadTick = currentTick;
+                        DragScroll?.Invoke(this, EventArgs.Empty);
+                    }
                 }
                 Invalidate();
             }
@@ -294,6 +302,24 @@ namespace Ched.UI
             {
                 isNewSlideStepVisible = value;
                 NewNoteTypeChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public bool Playing
+        {
+            get { return playing; }
+            set
+            {
+                playing = value;
+            }
+        }
+
+        public bool IsFollowWhenPlaying
+        {
+            get { return isFollowWhenPlaying; }
+            set
+            {
+                isFollowWhenPlaying = value;
             }
         }
 
