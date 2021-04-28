@@ -37,5 +37,10 @@ namespace Ched.Drawing
         {
             return new RectangleF(rect.Left - dx, rect.Top - dy, rect.Width + dx * 2, rect.Height + dy * 2);
         }
+
+        public static RectangleF OffsetInplace(this RectangleF rect, float dx, float dy)
+        {
+            return new RectangleF(rect.Left + dx, rect.Top + dy, rect.Width, rect.Height);
+        }
     }
 }

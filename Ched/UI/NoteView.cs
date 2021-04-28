@@ -35,7 +35,7 @@ namespace Ched.UI
         private Color laneBorderDarkColor = Color.FromArgb(30, 30, 30);
         private ColorProfile colorProfile;
         private int unitLaneWidth = 12;
-        private int shortNoteHeight = 5;
+        private int shortNoteHeight = 10;
         private int unitBeatTick = 480;
         private float unitBeatHeight = 120;
 
@@ -414,7 +414,7 @@ namespace Ched.UI
 
                     var airActions = Notes.AirActions.Reverse()
                         .SelectMany(q => q.ActionNotes.Where(r => visibleTick(q.StartTick + r.Offset)))
-                        .Select(q => GetClickableRectFromNotePosition(q.ParentNote.StartTick + q.Offset, q.ParentNote.ParentNote.LaneIndex, q.ParentNote.ParentNote.Width));
+                        .Select(q => GetClickableRectFromNotePosition(q.ParentNote.StartTick + q.Offset, q.ParentNote.ParentNote.LaneIndex, q.ParentNote.ParentNote.Width).OffsetInplace(0, -ShortNoteHeight)); // Offset the cursor changer hitbox
 
                     var shortNotes = Enumerable.Empty<TappableBase>()
                         .Concat(Notes.Damages.Reverse())
@@ -520,7 +520,8 @@ namespace Ched.UI
                     {
                         foreach (var action in note.ActionNotes)
                         {
-                            RectangleF noteRect = GetClickableRectFromNotePosition(note.ParentNote.Tick + action.Offset, note.ParentNote.LaneIndex, note.ParentNote.Width);
+                            // Offset the drag handler
+                            RectangleF noteRect = GetClickableRectFromNotePosition(note.ParentNote.Tick + action.Offset, note.ParentNote.LaneIndex, note.ParentNote.Width).OffsetInplace(0, -ShortNoteHeight);
                             if (noteRect.Contains(scorePos))
                             {
                                 int beforeOffset = action.Offset;
@@ -1289,7 +1290,8 @@ namespace Ched.UI
                     {
                         foreach (var action in note.ActionNotes)
                         {
-                            RectangleF rect = GetClickableRectFromNotePosition(note.StartTick + action.Offset, note.ParentNote.LaneIndex, note.ParentNote.Width);
+                            // Offset erase hitbox for air actions
+                            RectangleF rect = GetClickableRectFromNotePosition(note.StartTick + action.Offset, note.ParentNote.LaneIndex, note.ParentNote.Width).OffsetInplace(0, -ShortNoteHeight);
                             if (rect.Contains(scorePos))
                             {
                                 if (note.ActionNotes.Count == 1)
@@ -1684,7 +1686,7 @@ namespace Ched.UI
                 dc.DrawAirHoldLine(
                     (UnitLaneWidth + BorderThickness) * (note.ParentNote.LaneIndex + note.ParentNote.Width / 2f),
                     GetYPositionFromTick(note.StartTick),
-                    GetYPositionFromTick(note.StartTick + note.GetDuration()),
+                    GetYPositionFromTick(note.StartTick + note.GetDuration()) - ShortNoteHeight, // For shorter air-action notes
                     ShortNoteHeight);
             }
 
@@ -1752,7 +1754,10 @@ namespace Ched.UI
             {
                 foreach (var note in action.ActionNotes)
                 {
-                    dc.DrawAirAction(GetRectFromNotePosition(action.StartTick + note.Offset, action.ParentNote.LaneIndex, action.ParentNote.Width).Expand(-ShortNoteHeight * 0.28f));
+                    // dc.DrawAirAction(GetRectFromNotePosition(action.StartTick + note.Offset, action.ParentNote.LaneIndex, action.ParentNote.Width).Expand(-ShortNoteHeight * 0.28f));
+                    // Offset the drawn AirAction bar one ShortNoteHeight down to avoid overlap
+                    RectangleF noteRect = GetRectFromNotePosition(action.StartTick + note.Offset, action.ParentNote.LaneIndex, action.ParentNote.Width).OffsetInplace(0, -ShortNoteHeight).Expand(-ShortNoteHeight * 0.1f);
+                    dc.DrawAirAction(noteRect);
                 }
             }
 
