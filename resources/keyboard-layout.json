@@ -16,10 +16,25 @@
     {
       "w": 2
     },
-    "Backspace"
+    "Backspace",
+    {
+      "x": 1,
+      "c": "#adadad",
+      "h2": 2
+    },
+    "LMB\nEdit",
+    {
+      "h2": 2
+    },
+    "MMB\nSelect",
+    {
+      "h2": 2
+    },
+    "RMB\nDelete"
   ],
   [
     {
+      "c": "#cccccc",
       "w": 1.5
     },
     "Tab",
@@ -95,10 +110,18 @@
     {
       "w": 2.25
     },
-    "Enter"
+    "Enter",
+    {
+      "x": 1,
+      "a": 7,
+      "w2": 3,
+      "h2": 3
+    },
+    ""
   ],
   [
     {
+      "a": 4,
       "w": 2.25
     },
     "Shift",
