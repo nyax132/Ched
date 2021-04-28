@@ -1,4 +1,18 @@
-# Ched
+# Ched (Enhancement branch)
+
+- Disabled double right click toggle between edit and select mode
+- Right click in edit mode behaves like erase
+- Middle click in edit mode behaves like select
+- Added hotkeys (Preview using [keyboard layout editor](http://www.keyboard-layout-editor.com/))
+
+![hotkeys](./resources/keyboard-layout.png)
+
+- Added playfield autoscroll when previewing
+- Changed tick sound to ksm tick sound
+
+Look in the releases panel to the right.
+
+# Original Readme
 
 [![Build status](https://ci.appveyor.com/api/projects/status/pq1lght43m7ytlv1?svg=true)](https://ci.appveyor.com/project/paralleltree/ched)
 
