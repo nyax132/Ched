@@ -9,6 +9,12 @@
 
 - Added playfield autoscroll when previewing
 - Changed tick sound to ksm tick sound
+- Increased note thickness
+- Prevent air-action notes from overlapping other notes
+
+![note thickness](./resources/note-thickness.png)
+
+- Pre-included .sus import from [sus2img](https://github.com/paralleltree/sus2img)
 
 Look in the releases panel to the right.
 
