@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -820,11 +820,11 @@ namespace Ched.UI
                 Enabled = false
             };
 
-            var penButton = new ToolStripButton(MainFormStrings.Pen + " (N)", Resources.EditIcon, (s, e) => noteView.EditMode = EditMode.Edit)
+            var penButton = new ToolStripButton(MainFormStrings.Pen + " (Q)", Resources.EditIcon, (s, e) => noteView.EditMode = EditMode.Edit)
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };
-            var selectionButton = new ToolStripButton(MainFormStrings.Selection + " (P)", Resources.SelectionIcon, (s, e) => noteView.EditMode = EditMode.Select)
+            var selectionButton = new ToolStripButton(MainFormStrings.Selection + " (W)", Resources.SelectionIcon, (s, e) => noteView.EditMode = EditMode.Select)
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };
@@ -1026,11 +1026,11 @@ namespace Ched.UI
                 if (ModifierKeys.HasFlag(Keys.Control) || ModifierKeys.HasFlag(Keys.Shift) || ModifierKeys.HasFlag(Keys.Alt)) return;
                 switch (e.KeyCode)
                 {
-                    case Keys.P:
-                        NoteView.EditMode = EditMode.Select;
-                        break;
-                    case Keys.N:
+                    case Keys.Q:
                         NoteView.EditMode = EditMode.Edit;
+                        break;
+                    case Keys.W:
+                        NoteView.EditMode = EditMode.Select;
                         break;
                     case Keys.E:
                         NoteView.EditMode = EditMode.Erase;
@@ -1053,7 +1053,7 @@ namespace Ched.UI
                         NoteView.IsNewSlideStepVisible = true;
                         break;
                     case Keys.A:
-                        if (NoteView.NewNoteType != NoteType.Air || NoteView.AirDirection.VerticalDirection != VerticalAirDirection.Up)
+                        if (NoteView.EditMode != EditMode.Edit || NoteView.NewNoteType != NoteType.Air || NoteView.AirDirection.VerticalDirection != VerticalAirDirection.Up)
                         {
                             NoteView.NewNoteType = NoteType.Air;
                             NoteView.AirDirection = new AirDirection(VerticalAirDirection.Up, HorizontalAirDirection.Center);
@@ -1075,7 +1075,7 @@ namespace Ched.UI
                         }
                         break;
                     case Keys.D:
-                        if (NoteView.NewNoteType != NoteType.Air || NoteView.AirDirection.VerticalDirection != VerticalAirDirection.Down)
+                        if (NoteView.EditMode != EditMode.Edit || NoteView.NewNoteType != NoteType.Air || NoteView.AirDirection.VerticalDirection != VerticalAirDirection.Down)
                         {
                             NoteView.NewNoteType = NoteType.Air;
                             NoteView.AirDirection = new AirDirection(VerticalAirDirection.Down, HorizontalAirDirection.Center);
