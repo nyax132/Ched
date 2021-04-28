@@ -187,6 +187,8 @@ namespace Ched.UI
             NoteView.NewNoteType = NoteType.Tap;
             NoteView.EditMode = EditMode.Edit;
 
+            SetupHotkeys();
+
             LoadEmptyBook();
             SetText();
 
@@ -818,15 +820,15 @@ namespace Ched.UI
                 Enabled = false
             };
 
-            var penButton = new ToolStripButton(MainFormStrings.Pen, Resources.EditIcon, (s, e) => noteView.EditMode = EditMode.Edit)
+            var penButton = new ToolStripButton(MainFormStrings.Pen + " (N)", Resources.EditIcon, (s, e) => noteView.EditMode = EditMode.Edit)
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };
-            var selectionButton = new ToolStripButton(MainFormStrings.Selection, Resources.SelectionIcon, (s, e) => noteView.EditMode = EditMode.Select)
+            var selectionButton = new ToolStripButton(MainFormStrings.Selection + " (P)", Resources.SelectionIcon, (s, e) => noteView.EditMode = EditMode.Select)
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };
-            var eraserButton = new ToolStripButton(MainFormStrings.Eraser, Resources.EraserIcon, (s, e) => noteView.EditMode = EditMode.Erase)
+            var eraserButton = new ToolStripButton(MainFormStrings.Eraser + " (E)", Resources.EraserIcon, (s, e) => noteView.EditMode = EditMode.Erase)
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };
@@ -888,19 +890,19 @@ namespace Ched.UI
 
         private ToolStrip CreateNewNoteTypeToolStrip(NoteView noteView)
         {
-            var tapButton = new ToolStripButton("TAP", Resources.TapIcon, (s, e) => noteView.NewNoteType = NoteType.Tap)
+            var tapButton = new ToolStripButton("TAP (T)", Resources.TapIcon, (s, e) => noteView.NewNoteType = NoteType.Tap)
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };
-            var exTapButton = new ToolStripButton("ExTAP", Resources.ExTapIcon, (s, e) => noteView.NewNoteType = NoteType.ExTap)
+            var exTapButton = new ToolStripButton("ExTAP (Y)", Resources.ExTapIcon, (s, e) => noteView.NewNoteType = NoteType.ExTap)
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };
-            var holdButton = new ToolStripButton("HOLD", Resources.HoldIcon, (s, e) => noteView.NewNoteType = NoteType.Hold)
+            var holdButton = new ToolStripButton("HOLD (H)", Resources.HoldIcon, (s, e) => noteView.NewNoteType = NoteType.Hold)
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };
-            var slideButton = new ToolStripButton("SLIDE", Resources.SlideIcon, (s, e) =>
+            var slideButton = new ToolStripButton("SLIDE (S)", Resources.SlideIcon, (s, e) =>
             {
                 noteView.NewNoteType = NoteType.Slide;
                 noteView.IsNewSlideStepVisible = false;
@@ -908,7 +910,7 @@ namespace Ched.UI
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };
-            var slideStepButton = new ToolStripButton(MainFormStrings.SlideStep, Resources.SlideStepIcon, (s, e) =>
+            var slideStepButton = new ToolStripButton(MainFormStrings.SlideStep + " (X)", Resources.SlideStepIcon, (s, e) =>
             {
                 noteView.NewNoteType = NoteType.Slide;
                 noteView.IsNewSlideStepVisible = true;
@@ -916,15 +918,15 @@ namespace Ched.UI
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };
-            var airActionButton = new ToolStripButton("AIR-ACTION", Resources.AirActionIcon, (s, e) => noteView.NewNoteType = NoteType.AirAction)
+            var airActionButton = new ToolStripButton("AIR-ACTION (Z)", Resources.AirActionIcon, (s, e) => noteView.NewNoteType = NoteType.AirAction)
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };
-            var flickButton = new ToolStripButton("FLICK", Resources.FlickIcon, (s, e) => noteView.NewNoteType = NoteType.Flick)
+            var flickButton = new ToolStripButton("FLICK (F)", Resources.FlickIcon, (s, e) => noteView.NewNoteType = NoteType.Flick)
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };
-            var damageButton = new ToolStripButton("DAMAGE", Resources.DamgeIcon, (s, e) => noteView.NewNoteType = NoteType.Damage)
+            var damageButton = new ToolStripButton("DAMAGE (C)", Resources.DamgeIcon, (s, e) => noteView.NewNoteType = NoteType.Damage)
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };
@@ -933,7 +935,7 @@ namespace Ched.UI
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };
-            airKind.Text = "AIR";
+            airKind.Text = "AIR (A/D)";
             airKind.Click += (s, e) => noteView.NewNoteType = NoteType.Air;
             airKind.DropDown.Items.AddRange(new ToolStripItem[]
             {
@@ -1013,6 +1015,99 @@ namespace Ched.UI
                 tapButton, exTapButton, holdButton, slideButton, slideStepButton, airKind, airActionButton, flickButton, damageButton,
                 quantizeComboBox
             });
+        }
+    
+        private void SetupHotkeys()
+        {
+            // https://github.com/TinyTany/M4ple-Editor/blob/master/NE4S/MainForm.cs#L274
+            NoteView.KeyDown += (s, e) =>
+            {
+                // If any modifier keys are pressed, do not use hotkey
+                if (ModifierKeys.HasFlag(Keys.Control) || ModifierKeys.HasFlag(Keys.Shift) || ModifierKeys.HasFlag(Keys.Alt)) return;
+                switch (e.KeyCode)
+                {
+                    case Keys.P:
+                        NoteView.EditMode = EditMode.Select;
+                        break;
+                    case Keys.N:
+                        NoteView.EditMode = EditMode.Edit;
+                        break;
+                    case Keys.E:
+                        NoteView.EditMode = EditMode.Erase;
+                        break;
+                    case Keys.T:
+                        NoteView.NewNoteType = NoteType.Tap;
+                        break;
+                    case Keys.Y:
+                        NoteView.NewNoteType = NoteType.ExTap;
+                        break;
+                    case Keys.H:
+                        NoteView.NewNoteType = NoteType.Hold;
+                        break;
+                    case Keys.S:
+                        NoteView.NewNoteType = NoteType.Slide;
+                        NoteView.IsNewSlideStepVisible = false;
+                        break;
+                    case Keys.X:
+                        NoteView.NewNoteType = NoteType.Slide;
+                        NoteView.IsNewSlideStepVisible = true;
+                        break;
+                    case Keys.A:
+                        if (NoteView.NewNoteType != NoteType.Air || NoteView.AirDirection.VerticalDirection != VerticalAirDirection.Up)
+                        {
+                            NoteView.NewNoteType = NoteType.Air;
+                            NoteView.AirDirection = new AirDirection(VerticalAirDirection.Up, HorizontalAirDirection.Center);
+                        } else
+                        {
+                            // Cycle through possible horizontal directions
+                            switch (NoteView.AirDirection.HorizontalDirection)
+                            {
+                                case HorizontalAirDirection.Center:
+                                    NoteView.AirDirection = new AirDirection(VerticalAirDirection.Up, HorizontalAirDirection.Left);
+                                    break;
+                                case HorizontalAirDirection.Left:
+                                    NoteView.AirDirection = new AirDirection(VerticalAirDirection.Up, HorizontalAirDirection.Right);
+                                    break;
+                                case HorizontalAirDirection.Right:
+                                    NoteView.AirDirection = new AirDirection(VerticalAirDirection.Up, HorizontalAirDirection.Center);
+                                    break;
+                            }
+                        }
+                        break;
+                    case Keys.D:
+                        if (NoteView.NewNoteType != NoteType.Air || NoteView.AirDirection.VerticalDirection != VerticalAirDirection.Down)
+                        {
+                            NoteView.NewNoteType = NoteType.Air;
+                            NoteView.AirDirection = new AirDirection(VerticalAirDirection.Down, HorizontalAirDirection.Center);
+                        }
+                        else
+                        {
+                            // Cycle through possible horizontal directions
+                            switch (NoteView.AirDirection.HorizontalDirection)
+                            {
+                                case HorizontalAirDirection.Center:
+                                    NoteView.AirDirection = new AirDirection(VerticalAirDirection.Down, HorizontalAirDirection.Left);
+                                    break;
+                                case HorizontalAirDirection.Left:
+                                    NoteView.AirDirection = new AirDirection(VerticalAirDirection.Down, HorizontalAirDirection.Right);
+                                    break;
+                                case HorizontalAirDirection.Right:
+                                    NoteView.AirDirection = new AirDirection(VerticalAirDirection.Down, HorizontalAirDirection.Center);
+                                    break;
+                            }
+                        }
+                        break;
+                    case Keys.Z:
+                        NoteView.NewNoteType = NoteType.AirAction;
+                        break;
+                    case Keys.F:
+                        NoteView.NewNoteType = NoteType.Flick;
+                        break;
+                    case Keys.C:
+                        NoteView.NewNoteType = NoteType.Damage;
+                        break;
+                }
+            };
         }
     }
 }
