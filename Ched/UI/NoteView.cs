@@ -47,6 +47,7 @@ namespace Ched.UI
         private NoteType newNoteType = NoteType.Tap;
         private AirDirection airDirection = new AirDirection(VerticalAirDirection.Up, HorizontalAirDirection.Center);
         private bool isNewSlideStepVisible = true;
+        private bool isNewSlideStepCurve = true;
         private bool playing = false;
         private bool isFollowWhenPlaying = false;
 
@@ -305,6 +306,16 @@ namespace Ched.UI
             }
         }
 
+        public bool IsNewSlideStepCurve
+        {
+            get { return isNewSlideStepCurve; }
+            set
+            {
+                isNewSlideStepCurve = value;
+                NewNoteTypeChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
         public bool Playing
         {
             get { return playing; }
@@ -385,6 +396,7 @@ namespace Ched.UI
                 HoldColor = new GradientColor(Color.FromArgb(196, 86, 0), Color.FromArgb(244, 156, 102)),
                 HoldBackgroundColor = new GradientColor(Color.FromArgb(196, 166, 44, 168), Color.FromArgb(196, 216, 216, 0)),
                 SlideColor = new GradientColor(Color.FromArgb(0, 16, 138), Color.FromArgb(86, 106, 255)),
+                SlideCurveColor = new GradientColor(Color.FromArgb(128, 128, 138), Color.FromArgb(128, 128, 255)),
                 SlideLineColor = Color.FromArgb(196, 0, 214, 192),
                 SlideBackgroundColor = new GradientColor(Color.FromArgb(196, 166, 44, 168), Color.FromArgb(196, 0, 164, 146)),
                 AirUpColor = Color.FromArgb(28, 206, 22),
@@ -1172,7 +1184,8 @@ namespace Ched.UI
                                                 var newStep = new Slide.StepTap(note)
                                                 {
                                                     TickOffset = tickOffset,
-                                                    IsVisible = IsNewSlideStepVisible
+                                                    IsVisible = IsNewSlideStepVisible,
+                                                    IsCurve = IsNewSlideStepCurve
                                                 };
                                                 newStep.SetPosition(laneIndex - note.StartLaneIndex, width - note.StartWidth);
                                                 note.StepNotes.Add(newStep);
@@ -1712,8 +1725,18 @@ namespace Ched.UI
                     if (!Editable && !step.IsVisible) continue;
                     if (Notes.GetReferencedAir(step).Count() > 0) break; // AIR付き終点
                     RectangleF rect = GetRectFromNotePosition(step.Tick, step.LaneIndex, step.Width);
-                    if (step.IsVisible) dc.DrawSlideStep(rect);
-                    else dc.DrawBorder(rect);
+                    if (step.IsVisible)
+                    {
+                        dc.DrawSlideStep(rect);
+                    }
+                    else if (step.IsCurve)
+                    {
+                        dc.DrawSlideCurve(rect);
+                    }
+                    else
+                    {
+                        dc.DrawBorder(rect);
+                    }
                 }
             }
 
@@ -2213,6 +2236,11 @@ namespace Ched.UI
             }
             ScoreEvents = score.Events;
             Invalidate();
+        }
+
+        public void ScrollRelative(double distance)
+        {
+            HeadTick = HeadTick + (int) ((TailTick - HeadTick) * distance);
         }
 
         public class NoteCollection

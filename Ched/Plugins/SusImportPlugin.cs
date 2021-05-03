@@ -109,13 +109,16 @@ namespace Ched.Plugins
                 };
                 foreach (var step in steps.Skip(1))
                 {
+                    /*
                     if (step.Type == '4')
                     {
-                        args.ReportDiagnostic(new Diagnostic(DiagnosticSeverity.Warning, $"スライド変曲点は中継点としてインポートされます。(行: {step.LineIndex + 1})"));
+                        args.ReportDiagnostic(new Diagnostic(DiagnosticSeverity.Warning, $"スライド変曲点は中継点としてインポートされます。(行: {step.LineIndex + 1
                     }
+                    */
                     var stepTap = new Slide.StepTap(slide)
                     {
                         IsVisible = step.Type == '3' || step.Type == '2',
+                        IsCurve = step.Type == '4',
                         TickOffset = step.Position.Tick - slide.StartTick
                     };
                     stepTap.SetPosition(step.Position.LaneIndex - slide.StartLaneIndex, step.Position.Width - slide.StartWidth);

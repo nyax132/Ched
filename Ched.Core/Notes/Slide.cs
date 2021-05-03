@@ -129,6 +129,8 @@ namespace Ched.Core.Notes
             private int tickOffset = 1;
             [Newtonsoft.Json.JsonProperty]
             private bool isVisible = true;
+            [Newtonsoft.Json.JsonProperty]
+            private bool isCurve = false;
 
             public int TickOffset
             {
@@ -145,6 +147,12 @@ namespace Ched.Core.Notes
             {
                 get { return isVisible; }
                 set { isVisible = value; }
+            }
+
+            public bool IsCurve
+            {
+                get { return isCurve; }
+                set { isCurve = value; }
             }
 
             public override bool IsTap { get { return false; } }

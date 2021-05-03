@@ -78,6 +78,11 @@ namespace Ched.Drawing
             dc.Graphics.DrawNote(rect, dc.ColorProfile.SlideColor, dc.ColorProfile.BorderColor);
         }
 
+        public static void DrawSlideCurve(this DrawingContext dc, RectangleF rect)
+        {
+            dc.Graphics.DrawNote(rect, dc.ColorProfile.SlideCurveColor, dc.ColorProfile.BorderColor);
+        }
+
         /// <summary>
         /// SLIDEの背景を描画します。
         /// </summary>

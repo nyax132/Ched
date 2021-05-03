@@ -321,4 +321,7 @@
   <data name="FollowWhenPlaying" xml:space="preserve">
     <value>Scroll When Playing</value>
   </data>
+  <data name="SlideCurve" xml:space="preserve">
+    <value>SLIDE (CURVE)</value>
+  </data>
 </root>

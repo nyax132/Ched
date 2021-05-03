@@ -923,6 +923,7 @@ namespace Ched.UI
             {
                 noteView.NewNoteType = NoteType.Slide;
                 noteView.IsNewSlideStepVisible = false;
+                noteView.IsNewSlideStepCurve = false;
             })
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
@@ -931,6 +932,16 @@ namespace Ched.UI
             {
                 noteView.NewNoteType = NoteType.Slide;
                 noteView.IsNewSlideStepVisible = true;
+                noteView.IsNewSlideStepCurve = false;
+            })
+            {
+                DisplayStyle = ToolStripItemDisplayStyle.Image
+            };
+            var slideCurveButton = new ToolStripButton(MainFormStrings.SlideCurve , Resources.SlideCurveIcon, (s, e) =>
+            {
+                noteView.NewNoteType = NoteType.Slide;
+                noteView.IsNewSlideStepVisible = false;
+                noteView.IsNewSlideStepCurve = true;
             })
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
@@ -1001,8 +1012,9 @@ namespace Ched.UI
                 tapButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Tap);
                 exTapButton.Checked = noteView.NewNoteType.HasFlag(NoteType.ExTap);
                 holdButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Hold);
-                slideButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Slide) && !noteView.IsNewSlideStepVisible;
-                slideStepButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Slide) && noteView.IsNewSlideStepVisible;
+                slideButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Slide) && !noteView.IsNewSlideStepVisible && !noteView.IsNewSlideStepCurve;
+                slideStepButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Slide) && noteView.IsNewSlideStepVisible && !noteView.IsNewSlideStepCurve;
+                slideCurveButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Slide) && !noteView.IsNewSlideStepVisible && noteView.IsNewSlideStepCurve;
                 airKind.Checked = noteView.NewNoteType.HasFlag(NoteType.Air);
                 airActionButton.Checked = noteView.NewNoteType.HasFlag(NoteType.AirAction);
                 flickButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Flick);
@@ -1029,7 +1041,7 @@ namespace Ched.UI
 
             return new ToolStrip(new ToolStripItem[]
             {
-                tapButton, exTapButton, holdButton, slideButton, slideStepButton, airKind, airActionButton, flickButton, damageButton,
+                tapButton, exTapButton, holdButton, slideButton, slideStepButton, slideCurveButton, airKind, airActionButton, flickButton, damageButton,
                 quantizeComboBox
             });
         }
@@ -1064,10 +1076,17 @@ namespace Ched.UI
                     case Keys.S:
                         NoteView.NewNoteType = NoteType.Slide;
                         NoteView.IsNewSlideStepVisible = false;
+                        NoteView.IsNewSlideStepCurve = false;
                         break;
                     case Keys.X:
                         NoteView.NewNoteType = NoteType.Slide;
                         NoteView.IsNewSlideStepVisible = true;
+                        NoteView.IsNewSlideStepCurve = false;
+                        break;
+                    case Keys.C:
+                        NoteView.NewNoteType = NoteType.Slide;
+                        NoteView.IsNewSlideStepVisible = false;
+                        NoteView.IsNewSlideStepCurve = true;
                         break;
                     case Keys.A:
                         if (NoteView.EditMode != EditMode.Edit || NoteView.NewNoteType != NoteType.Air || NoteView.AirDirection.VerticalDirection != VerticalAirDirection.Up)
@@ -1120,8 +1139,20 @@ namespace Ched.UI
                     case Keys.F:
                         NoteView.NewNoteType = NoteType.Flick;
                         break;
-                    case Keys.C:
+                    case Keys.V:
                         NoteView.NewNoteType = NoteType.Damage;
+                        break;
+                    case Keys.D1:
+                        NoteView.ScrollRelative(-1.0);
+                        break;
+                    case Keys.D2:
+                        NoteView.ScrollRelative(-0.1);
+                        break;
+                    case Keys.D3:
+                        NoteView.ScrollRelative(0.1);
+                        break;
+                    case Keys.D4:
+                        NoteView.ScrollRelative(1.0);
                         break;
                 }
             };

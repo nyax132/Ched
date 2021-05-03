@@ -574,6 +574,15 @@ namespace Ched.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SLIDE(湾曲).
+        /// </summary>
+        public static string SlideCurve {
+            get {
+                return ResourceManager.GetString("SlideCurve", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SLIDE(中継点).
         /// </summary>
         public static string SlideStep {

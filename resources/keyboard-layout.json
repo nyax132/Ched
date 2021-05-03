@@ -1,10 +1,16 @@
 [
   [
     "~\n`",
-    "!\n1",
-    "@\n2",
-    "#\n3",
-    "$\n4",
+    {
+      "c": "#ce9cff"
+    },
+    "1\n⏪\n\n\n\n\nScroll",
+    "2\n◀️\n\n\n\n\nScroll",
+    "3\n▶️\n\n\n\n\nScroll",
+    "4\n⏩\n\n\n\n\nScroll",
+    {
+      "c": "#cccccc"
+    },
     "%\n5",
     "^\n6",
     "&\n7",
@@ -134,13 +140,16 @@
     },
     "X\nStep",
     {
-      "c": "#8390fc"
+      "c": "#a5afc9"
     },
-    "C\nAvoid",
+    "C\nCurve",
+    {
+      "c": "#525ed1"
+    },
+    "V\nAvoid",
     {
       "c": "#cccccc"
     },
-    "V",
     "B",
     "N",
     "M",
