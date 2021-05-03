@@ -83,6 +83,30 @@ namespace Ched.Drawing
             dc.Graphics.DrawNote(rect, dc.ColorProfile.SlideCurveColor, dc.ColorProfile.BorderColor);
         }
 
+        private static void GenerateLineCurvePath(this DrawingContext dc, GraphicsPath path, IEnumerable<SlideStepElement> points)
+        {
+            if (points.First().IsCurve || points.Last().IsCurve)
+            {
+                throw new InvalidOperationException("First and last points cannot be curve");
+            }
+
+            var pointsList = points.ToList();
+
+            int i = 0;
+            while (i < pointsList.Count() - 1)
+            {
+                if (pointsList[i + 1].IsCurve)
+                {
+                    path.AddBezier(pointsList[i].Point, pointsList[i + 1].Point, pointsList[i + 1].Point, pointsList[i + 2].Point);
+                    i += 2;
+                } else
+                {
+                    path.AddLine(pointsList[i].Point, pointsList[i + 1].Point);
+                    i += 1;
+                }
+            }
+        }
+
         /// <summary>
         /// SLIDEの背景を描画します。
         /// </summary>
@@ -90,7 +114,7 @@ namespace Ched.Drawing
         /// <param name="steps">全ての中継点位置からなるリスト</param>
         /// <param name="visibleSteps">可視中継点のY座標からなるリスト</param>
         /// <param name="noteHeight">ノート描画高さ</param>
-        public static void DrawSlideBackground(this DrawingContext dc, IEnumerable<SlideStepElement> steps, IEnumerable<float> visibleSteps, float noteHeight)
+        public static void DrawSlideBackground(this DrawingContext dc, IEnumerable<SlideStepElement> steps,IEnumerable<float> visibleSteps, float noteHeight)
         {
             var prevMode = dc.Graphics.SmoothingMode;
             dc.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
@@ -101,16 +125,25 @@ namespace Ched.Drawing
             var orderedSteps = steps.OrderBy(p => p.Point.Y).ToList();
             var orderedVisibleSteps = visibleSteps.OrderBy(p => p).ToList();
 
-            if (orderedSteps[0].Point.Y < orderedVisibleSteps[0] || orderedSteps[orderedSteps.Count - 1].Point.Y > orderedVisibleSteps[orderedVisibleSteps.Count - 1])
+            if (orderedSteps.First().Point.Y < orderedVisibleSteps.First() || orderedSteps.First().Point.Y > orderedVisibleSteps.Last())
             {
                 throw new ArgumentOutOfRangeException("visibleSteps", "visibleSteps must contain steps");
             }
 
             using (var path = new GraphicsPath())
             {
-                var left = orderedSteps.Select(p => p.Point);
-                var right = orderedSteps.Select(p => new PointF(p.Point.X + p.Width, p.Point.Y)).Reverse();
-                path.AddPolygon(left.Concat(right).ToArray());
+                var left = orderedSteps;
+                var right = orderedSteps.Select(p => new SlideStepElement { 
+                    Point = new PointF(p.Point.X + p.Width, p.Point.Y),
+                    Width = p.Width,
+                    IsCurve = p.IsCurve
+                });
+                GenerateLineCurvePath(dc, path, left);
+                path.Reverse();
+                path.AddLine(left.First().Point, right.First().Point);
+                GenerateLineCurvePath(dc, path, right);
+                path.AddLine(right.Last().Point, left.Last().Point);
+                path.CloseFigure();
 
                 float head = orderedVisibleSteps[0];
                 float height = orderedVisibleSteps[orderedVisibleSteps.Count - 1] - head;
@@ -131,8 +164,16 @@ namespace Ched.Drawing
             }
 
             using (var pen = new Pen(dc.ColorProfile.SlideLineColor, noteHeight * 0.4f))
+            using (var path = new GraphicsPath())
             {
-                dc.Graphics.DrawLines(pen, orderedSteps.Select(p => new PointF(p.Point.X + p.Width / 2, p.Point.Y)).ToArray());
+                var middle = orderedSteps.Select(p => new SlideStepElement
+                {
+                    Point = new PointF(p.Point.X + p.Width / 2, p.Point.Y),
+                    Width = p.Width,
+                    IsCurve = p.IsCurve
+                });
+                GenerateLineCurvePath(dc, path, middle);
+                dc.Graphics.DrawPath(pen, path);
             }
 
             dc.Graphics.SmoothingMode = prevMode;
@@ -243,5 +284,7 @@ namespace Ched.Drawing
     {
         public PointF Point { get; set; }
         public float Width { get; set; }
+
+        public bool IsCurve { get; set; }
     }
 }

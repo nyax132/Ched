@@ -17,8 +17,10 @@
 - Pre-included .sus import from [sus2img](https://github.com/paralleltree/sus2img)
 - Added bezier curve note
   - Import/export with .sus works
-  - Preview does not work
   - Use at most 1 curve between every 2 slide steps
+
+![beizers](./resources/beizers.png)
+
 - Added scroll up/down shortcut buttons
 
 Look in the releases panel to the right.

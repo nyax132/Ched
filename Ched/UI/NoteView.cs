@@ -1667,8 +1667,34 @@ namespace Ched.UI
             var slides = Notes.Slides.Where(p => p.StartTick <= tailTick && p.StartTick + p.GetDuration() >= HeadTick).ToList();
             foreach (var slide in slides)
             {
+                var slideParts = new[] { Tuple.Create((Slide.TapBase) slide.StartNote, true, false) }.Concat(
+                    slide.StepNotes.OrderBy(p => p.Tick).Select(p => Tuple.Create((Slide.TapBase) p, p.IsVisible, p.IsCurve))
+                ).ToList();
+
+                int stepHead = slideParts.LastOrDefault(p => p.Item1.Tick <= HeadTick && !p.Item3)?.Item1.Tick ?? slideParts.First().Item1.Tick;
+                int stepTail = slideParts.FirstOrDefault(p => p.Item1.Tick >= TailTick && !p.Item3)?.Item1.Tick ?? slideParts.Last().Item1.Tick;
+                int visibleHead = slideParts.LastOrDefault(p => p.Item1.Tick <= HeadTick && p.Item2)?.Item1.Tick ?? slideParts.First().Item1.Tick;
+                int visibleTail = slideParts.FirstOrDefault(p => p.Item1.Tick >= TailTick && p.Item2)?.Item1.Tick ?? slideParts.Last().Item1.Tick;
+
+                var renderSteps = slideParts
+                    .Where(p => stepHead <= p.Item1.Tick && p.Item1.Tick <= stepTail)
+                    .Select(p => new SlideStepElement()
+                    {
+                        Point = new PointF((UnitLaneWidth + BorderThickness) * p.Item1.LaneIndex, GetYPositionFromTick(p.Item1.Tick)),
+                        Width = (UnitLaneWidth + BorderThickness) * p.Item1.Width - BorderThickness,
+                        IsCurve = p.Item3
+                    });
+                var renderTetureAnchors = slideParts
+                    .Where(p => p.Item2 && visibleHead <= p.Item1.Tick && p.Item1.Tick <= visibleTail)
+                    .Select(p => GetYPositionFromTick(p.Item1.Tick));
+
+                if (stepHead == stepTail) continue;
+                dc.DrawSlideBackground(renderSteps, renderTetureAnchors, ShortNoteHeight);
+
+                /*
                 var bg = new Slide.TapBase[] { slide.StartNote }.Concat(slide.StepNotes.OrderBy(p => p.Tick)).ToList();
                 var visibleSteps = new Slide.TapBase[] { slide.StartNote }.Concat(slide.StepNotes.Where(p => p.IsVisible).OrderBy(p => p.Tick)).ToList();
+                var stepIsCurve = new bool[] { false }.Concat(slide.StepNotes.OrderBy(p => p.Tick).Select(p => p.IsCurve)).ToList();
 
                 int stepHead = bg.LastOrDefault(p => p.Tick <= HeadTick)?.Tick ?? bg[0].Tick;
                 int stepTail = bg.FirstOrDefault(p => p.Tick >= tailTick)?.Tick ?? bg[bg.Count - 1].Tick;
@@ -1680,14 +1706,16 @@ namespace Ched.UI
                     .Select(p => new SlideStepElement()
                     {
                         Point = new PointF((UnitLaneWidth + BorderThickness) * p.LaneIndex, GetYPositionFromTick(p.Tick)),
-                        Width = (UnitLaneWidth + BorderThickness) * p.Width - BorderThickness
+                        Width = (UnitLaneWidth + BorderThickness) * p.Width - BorderThickness,
                     });
                 var visibleStepPos = visibleSteps
                     .Where(p => p.Tick >= visibleHead && p.Tick <= visibleTail)
                     .Select(p => GetYPositionFromTick(p.Tick));
+                var stepIsCurve = new bool[] { { false } }.Concat(slide.StepNotes.OrderBy(p => p.Tick).Select(p => new { p.Tick, p.IsCurve }).Where
 
                 if (stepHead == stepTail) continue;
-                dc.DrawSlideBackground(steps, visibleStepPos, ShortNoteHeight);
+                dc.DrawSlideBackground(steps, stepIsCurve, visibleStepPos, ShortNoteHeight);
+                */
             }
 
             var airs = Notes.Airs.Where(p => p.Tick >= HeadTick && p.Tick <= tailTick).ToList();
