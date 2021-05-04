@@ -80,9 +80,9 @@ namespace Ched.Drawing
             dc.Graphics.DrawNote(rect, dc.ColorProfile.SlideColor, dc.ColorProfile.BorderColor);
         }
 
-        public static void DrawSlideCurve(this DrawingContext dc, RectangleF rect)
+        public static void DrawSlideCurve(this DrawingContext dc, RectangleF rect, bool disabled=false)
         {
-            dc.Graphics.DrawNote(rect, dc.ColorProfile.SlideCurveColor, dc.ColorProfile.BorderColor);
+            dc.Graphics.DrawNote(rect, disabled ? dc.ColorProfile.SlideCurveDisabledColor : dc.ColorProfile.SlideCurveColor, dc.ColorProfile.BorderColor);
         }
 
         private static Tuple<List<PointF>, List<PointF>, List<PointF>> GenerateLineCurvePath(IEnumerable<SlideStepElement> points, float leftBound, float rightBound)

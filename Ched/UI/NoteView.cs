@@ -396,7 +396,8 @@ namespace Ched.UI
                 HoldColor = new GradientColor(Color.FromArgb(196, 86, 0), Color.FromArgb(244, 156, 102)),
                 HoldBackgroundColor = new GradientColor(Color.FromArgb(196, 166, 44, 168), Color.FromArgb(196, 216, 216, 0)),
                 SlideColor = new GradientColor(Color.FromArgb(0, 16, 138), Color.FromArgb(86, 106, 255)),
-                SlideCurveColor = new GradientColor(Color.FromArgb(128, 128, 138), Color.FromArgb(128, 128, 255)),
+                SlideCurveColor = new GradientColor(Color.FromArgb(192, 130, 131, 144), Color.FromArgb(192, 101, 153, 129)),
+                SlideCurveDisabledColor = new GradientColor(Color.FromArgb(45, 46, 50), Color.FromArgb(128, 45, 46, 50)),
                 SlideLineColor = Color.FromArgb(196, 0, 214, 192),
                 SlideBackgroundColor = new GradientColor(Color.FromArgb(196, 166, 44, 168), Color.FromArgb(196, 0, 164, 146)),
                 AirUpColor = Color.FromArgb(28, 206, 22),
@@ -1722,6 +1723,7 @@ namespace Ched.UI
 
             foreach (var slide in slides)
             {
+                var wasLastSlideCurve = false;
                 foreach (var step in slide.StepNotes.OrderBy(p => p.TickOffset))
                 {
                     if (!Editable && !step.IsVisible) continue;
@@ -1730,13 +1732,16 @@ namespace Ched.UI
                     if (step.IsVisible)
                     {
                         dc.DrawSlideStep(rect);
+                        wasLastSlideCurve = false;
                     }
                     else if (step.IsCurve)
                     {
-                        dc.DrawSlideCurve(rect);
+                        dc.DrawSlideCurve(rect, wasLastSlideCurve);
+                        wasLastSlideCurve = !wasLastSlideCurve;
                     }
                     else
                     {
+                        wasLastSlideCurve = false;
                         dc.DrawBorder(rect);
                     }
                 }

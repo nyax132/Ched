@@ -36,6 +36,7 @@ namespace Ched.Drawing
         public GradientColor SlideBackgroundColor { get; set; }
         public GradientColor SlideColor { get; set; }
         public GradientColor SlideCurveColor { get; set; }
+        public GradientColor SlideCurveDisabledColor { get; set; }
         public Color SlideLineColor { get; set; }
         public GradientColor AirActionColor { get; set; }
         public Color AirUpColor { get; set; }
