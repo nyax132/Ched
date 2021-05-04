@@ -17,14 +17,13 @@
 - Pre-included .sus import from [sus2img](https://github.com/paralleltree/sus2img)
 - Added bezier curve note with gray color
 
-![beizers](./resources/beizers.png)
+  ![beizers](./resources/beizers.png)
 
   - Import/export with .sus works
   - Use at most 1 curve between every 2 slide steps
-  - If two "SLIDE CURVE" notes are next to each other, the later one will default to a "SLIDE STEP" note with black color
-  - .sus export will automatically convert to "SLIDE STEP"
+  - If two "SLIDE CURVE" notes are next to each other, the later one will default to a "SLIDE STEP" note with black color and .sus export will also automatically convert to "SLIDE STEP"
 
-![duplicate curve](./resources/duplicate-curve.png)
+  ![duplicate curve](./resources/duplicate-curve.png)
 
 - Added scroll up/down shortcut buttons
 
