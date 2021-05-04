@@ -12,6 +12,8 @@ namespace Ched.Drawing
 {
     public static class NoteGraphics
     {
+
+        private static int BezierPrecision = 20;
         public static void DrawTap(this DrawingContext dc, RectangleF rect)
         {
             dc.Graphics.DrawTappableNote(rect, dc.ColorProfile.TapColor, dc.ColorProfile.BorderColor);
@@ -97,7 +99,16 @@ namespace Ched.Drawing
             {
                 if (pointsList[i + 1].IsCurve)
                 {
-                    path.AddBezier(pointsList[i].Point, pointsList[i + 1].Point, pointsList[i + 1].Point, pointsList[i + 2].Point);
+                    // path.AddBezier(pointsList[i].Point, pointsList[i + 1].Point, pointsList[i + 1].Point, pointsList[i + 2].Point);
+                    path.AddLines(Enumerable
+                        .Range(0, BezierPrecision + 1)
+                        .Select(p => ((float) p) / BezierPrecision)
+                        .Select(p => new PointF {
+                            X = (1 - p) * (1 - p) * pointsList[i].Point.X + 2 * p * (1 - p) * pointsList[i + 1].Point.X + p * p * pointsList[i + 2].Point.X,
+                            Y = (1 - p) * (1 - p) * pointsList[i].Point.Y + 2 * p * (1 - p) * pointsList[i + 1].Point.Y + p * p * pointsList[i + 2].Point.Y
+                        })
+                        .ToArray()
+                    );
                     i += 2;
                 } else
                 {
