@@ -175,19 +175,23 @@ namespace Ched.Components.Exporter
                             Type = p.IsVisible ? "3" : (p.IsCurve ? "4": "5")
                         }).Take(slide.Note.StepNotes.Count - 1).ToArray();
                         // Filter out consecutive curves
-                        var lastStepType = steps[0].Type;
-                        for (int i = 1; i < steps.Count(); i++)
+                        if (steps.Count() != 0)
                         {
-                            if (lastStepType == "4" && steps[i].Type == "4")
+                            var lastStepType = steps[0].Type;
+                            for (int i = 1; i < steps.Count(); i++)
                             {
-                                steps[i] = new {
-                                    Tick = steps[i].Tick,
-                                    LaneIndex = slide.Note.StartLaneIndex,
-                                    Width = slide.Note.StartWidth,
-                                    Type = "5"
-                                };
+                                if (lastStepType == "4" && steps[i].Type == "4")
+                                {
+                                    steps[i] = new
+                                    {
+                                        Tick = steps[i].Tick,
+                                        LaneIndex = slide.Note.StartLaneIndex,
+                                        Width = slide.Note.StartWidth,
+                                        Type = "5"
+                                    };
+                                }
+                                lastStepType = steps[i].Type;
                             }
-                            lastStepType = steps[i].Type;
                         }
                         var endNote = slide.Note.StepNotes.OrderBy(p => p.TickOffset).Last();
                         var end = new[] { new
