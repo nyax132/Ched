@@ -1689,33 +1689,7 @@ namespace Ched.UI
                     .Select(p => GetYPositionFromTick(p.Item1.Tick));
 
                 if (stepHead == stepTail) continue;
-                dc.DrawSlideBackground(renderSteps, renderTetureAnchors, ShortNoteHeight);
-
-                /*
-                var bg = new Slide.TapBase[] { slide.StartNote }.Concat(slide.StepNotes.OrderBy(p => p.Tick)).ToList();
-                var visibleSteps = new Slide.TapBase[] { slide.StartNote }.Concat(slide.StepNotes.Where(p => p.IsVisible).OrderBy(p => p.Tick)).ToList();
-                var stepIsCurve = new bool[] { false }.Concat(slide.StepNotes.OrderBy(p => p.Tick).Select(p => p.IsCurve)).ToList();
-
-                int stepHead = bg.LastOrDefault(p => p.Tick <= HeadTick)?.Tick ?? bg[0].Tick;
-                int stepTail = bg.FirstOrDefault(p => p.Tick >= tailTick)?.Tick ?? bg[bg.Count - 1].Tick;
-                int visibleHead = visibleSteps.LastOrDefault(p => p.Tick <= HeadTick)?.Tick ?? visibleSteps[0].Tick;
-                int visibleTail = visibleSteps.FirstOrDefault(p => p.Tick >= tailTick)?.Tick ?? visibleSteps[visibleSteps.Count - 1].Tick;
-
-                var steps = bg
-                    .Where(p => p.Tick >= stepHead && p.Tick <= stepTail)
-                    .Select(p => new SlideStepElement()
-                    {
-                        Point = new PointF((UnitLaneWidth + BorderThickness) * p.LaneIndex, GetYPositionFromTick(p.Tick)),
-                        Width = (UnitLaneWidth + BorderThickness) * p.Width - BorderThickness,
-                    });
-                var visibleStepPos = visibleSteps
-                    .Where(p => p.Tick >= visibleHead && p.Tick <= visibleTail)
-                    .Select(p => GetYPositionFromTick(p.Tick));
-                var stepIsCurve = new bool[] { { false } }.Concat(slide.StepNotes.OrderBy(p => p.Tick).Select(p => new { p.Tick, p.IsCurve }).Where
-
-                if (stepHead == stepTail) continue;
-                dc.DrawSlideBackground(steps, stepIsCurve, visibleStepPos, ShortNoteHeight);
-                */
+                dc.DrawSlideBackground(renderSteps, renderTetureAnchors, ShortNoteHeight, (float) LaneWidth);
             }
 
             var airs = Notes.Airs.Where(p => p.Tick >= HeadTick && p.Tick <= tailTick).ToList();
