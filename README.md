@@ -1,18 +1,20 @@
-# Ched (Enhancement branch)
+# ChedPlus
+
+[Ched](https://github.com/paralleltree/Ched) with extra features. Respect [@paralleltree](https://twitter.com/paralleltree).
 
 - Disabled double right click toggle between edit and select mode
 - Right click in edit mode behaves like erase
 - Middle click in edit mode behaves like select
 - Added hotkeys (Preview using [keyboard layout editor](http://www.keyboard-layout-editor.com/))
 
-![hotkeys](./resources/keyboard-layout.png)
+  ![hotkeys](./resources/keyboard-layout.png)
 
 - Added playfield autoscroll when previewing
 - Changed tick sound to ksm tick sound
 - Increased note thickness
 - Prevent air-action notes from overlapping other notes
 
-![note thickness](./resources/note-thickness.png)
+  ![note thickness](./resources/note-thickness.png)
 
 - Pre-included .sus import from [sus2img](https://github.com/paralleltree/sus2img)
 - Added bezier curve note with gray color
@@ -26,6 +28,10 @@
   ![duplicate curve](./resources/duplicate-curve.png)
 
 - Added scroll up/down shortcut buttons
+- Updated to latest upstream features as of [Ched 3.1.0](https://github.com/paralleltree/Ched/releases/tag/v3.1.0.0)
+  - Shortcut editor
+  - Export hotkey (Ctrl + E)
+- Made sus export distinct from upstream Ched
 
 Look in the releases panel to the right.
 
