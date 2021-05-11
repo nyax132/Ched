@@ -886,7 +886,7 @@ namespace Ched.UI
 
             var isFollowWhenPlayingItem = new ToolStripMenuItem(MainFormStrings.FollowWhenPlaying, null, (s, e) =>
             {
-                var item = s as MenuItem;
+                var item = s as ToolStripMenuItem;
                 item.Checked = !item.Checked;
                 noteView.IsFollowWhenPlaying = item.Checked;
                 ApplicationSettings.Default.IsFollowWhenPlaying = item.Checked;

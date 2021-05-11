@@ -107,18 +107,22 @@ namespace Ched.Drawing
             {
                 if (anchors[i + 1].IsCurve)
                 {
-                    // path.AddBezier(pointsList[i].Point, pointsList[i + 1].Point, pointsList[i + 1].Point, pointsList[i + 2].Point);
-                    middleCurve.AddRange(Enumerable
-                        .Range(0, BezierPrecision)
-                        .Select(p => ((float) p) / BezierPrecision)
-                        .Select(p => new PointF {
-                            X = (1 - p) * (1 - p) * anchors[i].Point.X + 2 * p * (1 - p) * anchors[i + 1].Point.X + p * p * anchors[i + 2].Point.X,
-                            Y = (1 - p) * (1 - p) * anchors[i].Point.Y + 2 * p * (1 - p) * anchors[i + 1].Point.Y + p * p * anchors[i + 2].Point.Y
+                    var startAnchor = anchors[i];
+                    var controlAnchor = anchors[i + 1];
+                    var endAnchor = anchors[i + 2];
+
+                    var controlPos = (controlAnchor.Point.Y - startAnchor.Point.Y) / (endAnchor.Point.Y - startAnchor.Point.Y);
+                    var controlWidth = endAnchor.Width * controlPos + startAnchor.Width * (1 - controlPos);
+
+                    var slices = Enumerable.Range(0, BezierPrecision).Select(p => ((float)p) / BezierPrecision);
+
+                    middleCurve.AddRange(slices.Select(
+                        p => new PointF {
+                            X = (1 - p) * (1 - p) * startAnchor.Point.X + 2 * p * (1 - p) * controlAnchor.Point.X + p * p * endAnchor.Point.X,
+                            Y = (1 - p) * (1 - p) * startAnchor.Point.Y + 2 * p * (1 - p) * controlAnchor.Point.Y + p * p * endAnchor.Point.Y
                         }));
-                    widths.AddRange(Enumerable
-                        .Range(0, BezierPrecision)
-                        .Select(p => ((float)p) / BezierPrecision)
-                        .Select(p => (1 - p) * anchors[i].Width + p * anchors[i + 2].Width));
+                    widths.AddRange(slices.Select(
+                        p => (1 - p) * (1 - p) * startAnchor.Width + 2 * p * (1 - p) * controlWidth + p * p * endAnchor.Width));
                     i += 2;
                 } else
                 {
