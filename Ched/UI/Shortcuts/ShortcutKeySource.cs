@@ -142,6 +142,7 @@ namespace Ched.UI.Shortcuts
             RegisterShortcut(Commands.OpenFile, Keys.Control | Keys.O);
             RegisterShortcut(Commands.Save, Keys.Control | Keys.S);
             RegisterShortcut(Commands.SaveAs, Keys.Control | Keys.Shift | Keys.S);
+            RegisterShortcut(Commands.ReExport, Keys.Control | Keys.E);
 
             RegisterShortcut(Commands.Undo, Keys.Control | Keys.Z);
             RegisterShortcut(Commands.Redo, Keys.Control | Keys.Y);
@@ -161,6 +162,27 @@ namespace Ched.UI.Shortcuts
             RegisterShortcut(Commands.PlayPreview, Keys.Space);
 
             RegisterShortcut(Commands.ShowHelp, Keys.F1);
+
+            RegisterShortcut(Commands.SelectPen, Keys.Q);
+            RegisterShortcut(Commands.SelectSelection, Keys.W);
+            RegisterShortcut(Commands.SelectEraser, Keys.E);
+
+            RegisterShortcut(Commands.SelectTap, Keys.T);
+            RegisterShortcut(Commands.SelectExTap, Keys.Y);
+            RegisterShortcut(Commands.SelectHold, Keys.H);
+            RegisterShortcut(Commands.SelectSlide, Keys.S);
+            RegisterShortcut(Commands.SelectSlideStep, Keys.X);
+            RegisterShortcut(Commands.SelectSlideCurve, Keys.C);
+            RegisterShortcut(Commands.SelectAirUp, Keys.A);
+            RegisterShortcut(Commands.SelectAirDown, Keys.D);
+            RegisterShortcut(Commands.SelectAirAction, Keys.Z);
+            RegisterShortcut(Commands.SelectFlick, Keys.F);
+            RegisterShortcut(Commands.SelectDamage, Keys.V);
+
+            RegisterShortcut(Commands.SeekForward, Keys.D3);
+            RegisterShortcut(Commands.SeekFastForward, Keys.D4);
+            RegisterShortcut(Commands.SeekBackward, Keys.D2);
+            RegisterShortcut(Commands.SeekFastBackward, Keys.D1);
         }
     }
 

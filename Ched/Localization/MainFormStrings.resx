@@ -332,6 +332,7 @@
   </data>
   <data name="ResetAll" xml:space="preserve">
     <value>初期化</value>
+  </data>
   <data name="FollowWhenPlaying" xml:space="preserve">
     <value>再生時にスクロール</value>
   </data>

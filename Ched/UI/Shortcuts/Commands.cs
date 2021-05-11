@@ -59,11 +59,17 @@ namespace Ched.UI.Shortcuts
         public static string SelectHold => "editor.selectHold";
         public static string SelectSlide => "editor.selectSlide";
         public static string SelectSlideStep => "editor.selectSlideStep";
+        public static string SelectSlideCurve => "editor.selectSlideCurve";
         public static string SelectAir => "editor.selectAir";
         public static string SelectAirUp => "editor.selectAirUp";
         public static string SelectAirDown => "editor.selectAirDown";
         public static string SelectAirAction => "editor.selectAirAction";
         public static string SelectFlick => "editor.selectFlick";
         public static string SelectDamage => "editor.selectDamage";
+
+        public static string SeekForward => "editor.seekForward";
+        public static string SeekFastForward => "editor.seekFastForward";
+        public static string SeekBackward => "editor.seekBackward";
+        public static string SeekFastBackward => "editor.seekFastBackward";
     }
 }

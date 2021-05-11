@@ -474,11 +474,14 @@ namespace Ched.UI
                 return;
             }
 
-            int startTick = NoteView.CurrentTick;
+            int startHeadTick = NoteView.HeadTick;
+            int startCurrentTick = NoteView.CurrentTick;
             void lambda(object p, EventArgs q)
             {
                 PreviewManager.Finished -= lambda;
-                NoteView.CurrentTick = startTick;
+                NoteView.Playing = false;
+                NoteView.CurrentTick = startCurrentTick;
+                NoteView.HeadTick = startHeadTick;
                 NoteView.Editable = CanEdit;
             }
 
@@ -486,8 +489,9 @@ namespace Ched.UI
             {
                 CommitChanges();
                 var context = new SoundPreviewContext(ScoreBook.Score, CurrentMusicSource);
-                if (!PreviewManager.Start(context, startTick)) return;
+                if (!PreviewManager.Start(context, startCurrentTick)) return;
                 PreviewManager.Finished += lambda;
+                NoteView.Playing = true;
                 NoteView.Editable = CanEdit;
             }
             catch (Exception ex)
@@ -664,7 +668,7 @@ namespace Ched.UI
                 NoteView.IsNewSlideStepVisible = true;
                 NoteView.IsNewSlideStepCurve = false;
             });
-            commandSource.RegisterCommand(Commands.SelectSlideStep, MainFormStrings.SlideCurve, () =>
+            commandSource.RegisterCommand(Commands.SelectSlideCurve, MainFormStrings.SlideCurve, () =>
             {
                 NoteView.NewNoteType = NoteType.Slide;
                 NoteView.IsNewSlideStepVisible = false;
@@ -721,6 +725,11 @@ namespace Ched.UI
                 }
                 throw new ArgumentException();
             }
+
+            commandSource.RegisterCommand(Commands.SeekForward, "Forward", () => NoteView.ScrollRelative(0.1));
+            commandSource.RegisterCommand(Commands.SeekFastForward, "Fast Forward", () => NoteView.ScrollRelative(1.0));
+            commandSource.RegisterCommand(Commands.SeekBackward, "Backward", () => NoteView.ScrollRelative(-0.1));
+            commandSource.RegisterCommand(Commands.SeekFastBackward, "Fast Backward", () => NoteView.ScrollRelative(-1.0));
         }
 
         private void ConfigureKeyboardShortcut()
@@ -875,6 +884,17 @@ namespace Ched.UI
             PreviewManager.Started += (s, e) => isAbortAtLastNoteItem.Enabled = false;
             PreviewManager.Finished += (s, e) => isAbortAtLastNoteItem.Enabled = true;
 
+            var isFollowWhenPlayingItem = new ToolStripMenuItem(MainFormStrings.FollowWhenPlaying, null, (s, e) =>
+            {
+                var item = s as MenuItem;
+                item.Checked = !item.Checked;
+                noteView.IsFollowWhenPlaying = item.Checked;
+                ApplicationSettings.Default.IsFollowWhenPlaying = item.Checked;
+            })
+            {
+                Checked = ApplicationSettings.Default.IsFollowWhenPlaying
+            };
+
             var playItem = shortcutItemBuilder.BuildItem(Commands.PlayPreview, MainFormStrings.Play);
 
             var stopItem = new ToolStripMenuItem(MainFormStrings.Stop, null, (s, e) =>
@@ -885,7 +905,7 @@ namespace Ched.UI
             var playMenuItems = new ToolStripItem[]
             {
                 playItem, stopItem, new ToolStripSeparator(),
-                isAbortAtLastNoteItem
+                isAbortAtLastNoteItem, isFollowWhenPlayingItem
             };
 
             var helpMenuItems = new ToolStripItem[]
