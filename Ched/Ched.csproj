@@ -155,6 +155,7 @@
       <DependentUpon>PluginStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="Plugins\ComboCalculator.cs" />
+    <Compile Include="Plugins\Diagnostics.cs" />
     <Compile Include="Plugins\ExportManager.cs" />
     <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="Plugins\ScoreBookExportPluginArgs.cs" />
@@ -166,6 +167,9 @@
     <Compile Include="Plugins\SlideReverser.cs" />
     <Compile Include="Plugins\SlideSplitter.cs" />
     <Compile Include="Plugins\SusExportPlugin.cs" />
+    <Compile Include="Plugins\SusImportPlugin.cs" />
+    <Compile Include="Plugins\SusParser.cs" />
+    <Compile Include="Plugins\SusScoreData.cs" />
     <Compile Include="UI\Helpers.cs" />
     <Compile Include="UI\Shortcuts\Commands.cs" />
     <Compile Include="UI\Shortcuts\KeyExtensions.cs" />
@@ -481,6 +485,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\information.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\slidecurve.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\BASS.Native.2.4.12.2\build\BASS.Native.targets" Condition="Exists('..\packages\BASS.Native.2.4.12.2\build\BASS.Native.targets')" />

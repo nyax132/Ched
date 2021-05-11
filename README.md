@@ -1,4 +1,35 @@
-# Ched
+# Ched (Enhancement branch)
+
+- Disabled double right click toggle between edit and select mode
+- Right click in edit mode behaves like erase
+- Middle click in edit mode behaves like select
+- Added hotkeys (Preview using [keyboard layout editor](http://www.keyboard-layout-editor.com/))
+
+![hotkeys](./resources/keyboard-layout.png)
+
+- Added playfield autoscroll when previewing
+- Changed tick sound to ksm tick sound
+- Increased note thickness
+- Prevent air-action notes from overlapping other notes
+
+![note thickness](./resources/note-thickness.png)
+
+- Pre-included .sus import from [sus2img](https://github.com/paralleltree/sus2img)
+- Added bezier curve note with gray color
+
+  ![beizers](./resources/beizers.png)
+
+  - Import/export with .sus works
+  - Use at most 1 curve between every 2 slide steps
+  - If two "SLIDE CURVE" notes are next to each other, the later one will default to a "SLIDE STEP" note with black color and .sus export will also automatically convert to "SLIDE STEP"
+
+  ![duplicate curve](./resources/duplicate-curve.png)
+
+- Added scroll up/down shortcut buttons
+
+Look in the releases panel to the right.
+
+# Original Readme
 
 [![Build status](https://ci.appveyor.com/api/projects/status/pq1lght43m7ytlv1?svg=true)](https://ci.appveyor.com/project/paralleltree/ched)
 

@@ -332,5 +332,10 @@
   </data>
   <data name="ResetAll" xml:space="preserve">
     <value>初期化</value>
+  <data name="FollowWhenPlaying" xml:space="preserve">
+    <value>再生時にスクロール</value>
+  </data>
+  <data name="SlideCurve" xml:space="preserve">
+    <value>SLIDE(湾曲)</value>
   </data>
 </root>

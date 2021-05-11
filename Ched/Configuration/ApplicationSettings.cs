@@ -46,5 +46,13 @@ namespace Ched.Configuration
             get { return ((bool)(this["IsPreviewAbortAtLastNote"])); }
             set { this["IsPreviewAbortAtLastNote"] = value; }
         }
+
+        [UserScopedSetting]
+        [DefaultSettingValue("False")]
+        public bool IsFollowWhenPlaying
+        {
+            get { return ((bool)(this["IsFollowWhenPlaying"])); }
+            set { this["IsFollowWhenPlaying"] = value; }
+        }
     }
 }

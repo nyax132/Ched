@@ -12,6 +12,8 @@ namespace Ched.Drawing
 {
     public static class NoteGraphics
     {
+
+        private static int BezierPrecision = 15;
         public static void DrawTap(this DrawingContext dc, RectangleF rect)
         {
             dc.Graphics.DrawTappableNote(rect, dc.ColorProfile.TapColor, dc.ColorProfile.BorderColor);
@@ -78,6 +80,69 @@ namespace Ched.Drawing
             dc.Graphics.DrawNote(rect, dc.ColorProfile.SlideColor, dc.ColorProfile.BorderColor);
         }
 
+        public static void DrawSlideCurve(this DrawingContext dc, RectangleF rect, bool disabled=false)
+        {
+            dc.Graphics.DrawNote(rect, disabled ? dc.ColorProfile.SlideCurveDisabledColor : dc.ColorProfile.SlideCurveColor, dc.ColorProfile.BorderColor);
+        }
+
+        private static Tuple<List<PointF>, List<PointF>, List<PointF>> GenerateLineCurvePath(IEnumerable<SlideStepElement> points, float leftBound, float rightBound)
+        {
+            if (points.First().IsCurve || points.Last().IsCurve)
+            {
+                throw new InvalidOperationException("First and last points cannot be curve");
+            }
+
+            var anchors = points.Select(p => new SlideStepElement
+            {
+                Point = new PointF(p.Point.X + p.Width / 2, p.Point.Y),
+                Width = p.Width,
+                IsCurve = p.IsCurve
+            }).ToList();
+
+            var middleCurve = new List<PointF> { };
+            var widths = new List<float> { };
+
+            int i = 0;
+            while (i < anchors.Count() - 1)
+            {
+                if (anchors[i + 1].IsCurve)
+                {
+                    // path.AddBezier(pointsList[i].Point, pointsList[i + 1].Point, pointsList[i + 1].Point, pointsList[i + 2].Point);
+                    middleCurve.AddRange(Enumerable
+                        .Range(0, BezierPrecision)
+                        .Select(p => ((float) p) / BezierPrecision)
+                        .Select(p => new PointF {
+                            X = (1 - p) * (1 - p) * anchors[i].Point.X + 2 * p * (1 - p) * anchors[i + 1].Point.X + p * p * anchors[i + 2].Point.X,
+                            Y = (1 - p) * (1 - p) * anchors[i].Point.Y + 2 * p * (1 - p) * anchors[i + 1].Point.Y + p * p * anchors[i + 2].Point.Y
+                        }));
+                    widths.AddRange(Enumerable
+                        .Range(0, BezierPrecision)
+                        .Select(p => ((float)p) / BezierPrecision)
+                        .Select(p => (1 - p) * anchors[i].Width + p * anchors[i + 2].Width));
+                    i += 2;
+                } else
+                {
+                    middleCurve.Add(anchors[i].Point);
+                    widths.Add(anchors[i].Width);
+                    i += 1;
+                }
+            }
+            middleCurve.Add(anchors.Last().Point);
+            widths.Add(anchors[i].Width);
+
+            var leftCurve = middleCurve.Zip(widths, (point, width) => new PointF {
+                X = Math.Max(point.X - width * 0.5f, leftBound),
+                Y = point.Y
+            }).ToList();
+            var rightCurve = middleCurve.Zip(widths, (point, width) => new PointF
+            {
+                X = Math.Min(point.X + width * 0.5f, rightBound),
+                Y = point.Y
+            }).ToList();
+
+            return Tuple.Create(leftCurve, middleCurve, rightCurve);
+        }
+
         /// <summary>
         /// SLIDEの背景を描画します。
         /// </summary>
@@ -85,7 +150,7 @@ namespace Ched.Drawing
         /// <param name="steps">全ての中継点位置からなるリスト</param>
         /// <param name="visibleSteps">可視中継点のY座標からなるリスト</param>
         /// <param name="noteHeight">ノート描画高さ</param>
-        public static void DrawSlideBackground(this DrawingContext dc, IEnumerable<SlideStepElement> steps, IEnumerable<float> visibleSteps, float noteHeight)
+        public static void DrawSlideBackground(this DrawingContext dc, IEnumerable<SlideStepElement> steps,IEnumerable<float> visibleSteps, float noteHeight, float laneWidth)
         {
             var prevMode = dc.Graphics.SmoothingMode;
             dc.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
@@ -96,16 +161,18 @@ namespace Ched.Drawing
             var orderedSteps = steps.OrderBy(p => p.Point.Y).ToList();
             var orderedVisibleSteps = visibleSteps.OrderBy(p => p).ToList();
 
-            if (orderedSteps[0].Point.Y < orderedVisibleSteps[0] || orderedSteps[orderedSteps.Count - 1].Point.Y > orderedVisibleSteps[orderedVisibleSteps.Count - 1])
+            if (orderedSteps.First().Point.Y < orderedVisibleSteps.First() || orderedSteps.First().Point.Y > orderedVisibleSteps.Last())
             {
                 throw new ArgumentOutOfRangeException("visibleSteps", "visibleSteps must contain steps");
             }
 
+            // Interpolate slides and curves
+            var (leftCurve, middleCurve, rightCurve) = GenerateLineCurvePath(orderedSteps, 0.0f, laneWidth);
+
             using (var path = new GraphicsPath())
             {
-                var left = orderedSteps.Select(p => p.Point);
-                var right = orderedSteps.Select(p => new PointF(p.Point.X + p.Width, p.Point.Y)).Reverse();
-                path.AddPolygon(left.Concat(right).ToArray());
+                rightCurve.Reverse();
+                path.AddPolygon(leftCurve.Concat(rightCurve).ToArray());
 
                 float head = orderedVisibleSteps[0];
                 float height = orderedVisibleSteps[orderedVisibleSteps.Count - 1] - head;
@@ -127,7 +194,7 @@ namespace Ched.Drawing
 
             using (var pen = new Pen(dc.ColorProfile.SlideLineColor, noteHeight * 0.4f))
             {
-                dc.Graphics.DrawLines(pen, orderedSteps.Select(p => new PointF(p.Point.X + p.Width / 2, p.Point.Y)).ToArray());
+                dc.Graphics.DrawLines(pen, middleCurve.ToArray());
             }
 
             dc.Graphics.SmoothingMode = prevMode;
@@ -238,5 +305,7 @@ namespace Ched.Drawing
     {
         public PointF Point { get; set; }
         public float Width { get; set; }
+
+        public bool IsCurve { get; set; }
     }
 }

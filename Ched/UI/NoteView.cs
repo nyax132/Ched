@@ -38,7 +38,7 @@ namespace Ched.UI
         private Color laneBorderDarkColor = Color.FromArgb(30, 30, 30);
         private ColorProfile colorProfile;
         private int unitLaneWidth = 12;
-        private int shortNoteHeight = 5;
+        private int shortNoteHeight = 10;
         private int unitBeatTick = 480;
         private float unitBeatHeight = 120;
 
@@ -50,6 +50,9 @@ namespace Ched.UI
         private NoteType newNoteType = NoteType.Tap;
         private AirDirection airDirection = new AirDirection(VerticalAirDirection.Up, HorizontalAirDirection.Center);
         private bool isNewSlideStepVisible = true;
+        private bool isNewSlideStepCurve = true;
+        private bool playing = false;
+        private bool isFollowWhenPlaying = false;
 
         /// <summary>
         /// 小節の区切り線の色を設定します。
@@ -250,10 +253,16 @@ namespace Ched.UI
             set
             {
                 currentTick = value;
-                if (currentTick < HeadTick || currentTick > TailTick)
+                if (Playing && IsFollowWhenPlaying)
                 {
-                    HeadTick = currentTick;
-                    DragScroll?.Invoke(this, EventArgs.Empty);
+                    HeadTick = currentTick - (int)((TailTick - HeadTick) * 0.1);
+                } else
+                {
+                    if (currentTick < HeadTick || currentTick > TailTick)
+                    {
+                        HeadTick = currentTick;
+                        DragScroll?.Invoke(this, EventArgs.Empty);
+                    }
                 }
                 Invalidate();
             }
@@ -299,6 +308,34 @@ namespace Ched.UI
             {
                 isNewSlideStepVisible = value;
                 NewNoteTypeChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public bool IsNewSlideStepCurve
+        {
+            get { return isNewSlideStepCurve; }
+            set
+            {
+                isNewSlideStepCurve = value;
+                NewNoteTypeChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public bool Playing
+        {
+            get { return playing; }
+            set
+            {
+                playing = value;
+            }
+        }
+
+        public bool IsFollowWhenPlaying
+        {
+            get { return isFollowWhenPlaying; }
+            set
+            {
+                isFollowWhenPlaying = value;
             }
         }
 
@@ -364,6 +401,8 @@ namespace Ched.UI
                 HoldColor = new GradientColor(Color.FromArgb(196, 86, 0), Color.FromArgb(244, 156, 102)),
                 HoldBackgroundColor = new GradientColor(Color.FromArgb(196, 166, 44, 168), Color.FromArgb(196, 216, 216, 0)),
                 SlideColor = new GradientColor(Color.FromArgb(0, 16, 138), Color.FromArgb(86, 106, 255)),
+                SlideCurveColor = new GradientColor(Color.FromArgb(192, 130, 131, 144), Color.FromArgb(192, 101, 153, 129)),
+                SlideCurveDisabledColor = new GradientColor(Color.FromArgb(45, 46, 50), Color.FromArgb(128, 45, 46, 50)),
                 SlideLineColor = Color.FromArgb(196, 0, 214, 192),
                 SlideBackgroundColor = new GradientColor(Color.FromArgb(196, 166, 44, 168), Color.FromArgb(196, 0, 164, 146)),
                 AirUpColor = Color.FromArgb(28, 206, 22),
@@ -393,7 +432,7 @@ namespace Ched.UI
 
                     var airActions = Notes.AirActions.Reverse()
                         .SelectMany(q => q.ActionNotes.Where(r => visibleTick(q.StartTick + r.Offset)))
-                        .Select(q => GetClickableRectFromNotePosition(q.ParentNote.StartTick + q.Offset, q.ParentNote.ParentNote.LaneIndex, q.ParentNote.ParentNote.Width));
+                        .Select(q => GetClickableRectFromNotePosition(q.ParentNote.StartTick + q.Offset, q.ParentNote.ParentNote.LaneIndex, q.ParentNote.ParentNote.Width).OffsetInplace(0, -ShortNoteHeight)); // Offset hitbox for air action cursor changer 
 
                     var shortNotes = Enumerable.Empty<TappableBase>()
                         .Concat(Notes.Damages.Reverse())
@@ -499,7 +538,8 @@ namespace Ched.UI
                     {
                         foreach (var action in note.ActionNotes)
                         {
-                            RectangleF noteRect = GetClickableRectFromNotePosition(note.ParentNote.Tick + action.Offset, note.ParentNote.LaneIndex, note.ParentNote.Width);
+                            // Offset the click-hold-drag handler
+                            RectangleF noteRect = GetClickableRectFromNotePosition(note.ParentNote.Tick + action.Offset, note.ParentNote.LaneIndex, note.ParentNote.Width).OffsetInplace(0, -ShortNoteHeight);
                             if (noteRect.Contains(scorePos))
                             {
                                 int beforeOffset = action.Offset;
@@ -1150,7 +1190,8 @@ namespace Ched.UI
                                                 var newStep = new Slide.StepTap(note)
                                                 {
                                                     TickOffset = tickOffset,
-                                                    IsVisible = IsNewSlideStepVisible
+                                                    IsVisible = IsNewSlideStepVisible,
+                                                    IsCurve = IsNewSlideStepCurve
                                                 };
                                                 newStep.SetPosition(laneIndex - note.StartLaneIndex, width - note.StartWidth);
                                                 note.StepNotes.Add(newStep);
@@ -1214,7 +1255,7 @@ namespace Ched.UI
 
             var eraseSubscription = mouseDown
                 .Where(p => Editable)
-                .Where(p => p.Button == MouseButtons.Left && EditMode == EditMode.Erase)
+                .Where(p => (p.Button == MouseButtons.Left && EditMode == EditMode.Erase) || (p.Button == MouseButtons.Right && EditMode == EditMode.Edit))
                 .SelectMany(p =>
                 {
                     Matrix startMatrix = GetDrawingMatrix(new Matrix());
@@ -1268,7 +1309,8 @@ namespace Ched.UI
                     {
                         foreach (var action in note.ActionNotes)
                         {
-                            RectangleF rect = GetClickableRectFromNotePosition(note.StartTick + action.Offset, note.ParentNote.LaneIndex, note.ParentNote.Width);
+                            // Offset erase handler
+                            RectangleF rect = GetClickableRectFromNotePosition(note.StartTick + action.Offset, note.ParentNote.LaneIndex, note.ParentNote.Width).OffsetInplace(0, -ShortNoteHeight);
                             if (rect.Contains(scorePos))
                             {
                                 if (note.ActionNotes.Count == 1)
@@ -1421,7 +1463,7 @@ namespace Ched.UI
 
             var selectSubscription = mouseDown
                 .Where(p => Editable)
-                .Where(p => p.Button == MouseButtons.Left && EditMode == EditMode.Select)
+                .Where(p => (p.Button == MouseButtons.Left && EditMode == EditMode.Select) || p.Button == MouseButtons.Middle)
                 .SelectMany(p =>
                 {
                     Matrix startMatrix = GetDrawingMatrix(new Matrix());
@@ -1537,12 +1579,12 @@ namespace Ched.UI
 
         protected override void OnMouseDoubleClick(MouseEventArgs e)
         {
-            base.OnMouseDoubleClick(e);
+            // base.OnMouseDoubleClick(e);
 
-            if (e.Button == MouseButtons.Right)
-            {
-                EditMode = EditMode == EditMode.Edit ? EditMode.Select : EditMode.Edit;
-            }
+            // if (e.Button == MouseButtons.Right)
+            // {
+            //    EditMode = EditMode == EditMode.Edit ? EditMode.Select : EditMode.Edit;
+            //}
         }
 
         protected override void OnPaint(PaintEventArgs pe)
@@ -1631,27 +1673,29 @@ namespace Ched.UI
             var slides = Notes.Slides.Where(p => p.StartTick <= tailTick && p.StartTick + p.GetDuration() >= HeadTick).ToList();
             foreach (var slide in slides)
             {
-                var bg = new Slide.TapBase[] { slide.StartNote }.Concat(slide.StepNotes.OrderBy(p => p.Tick)).ToList();
-                var visibleSteps = new Slide.TapBase[] { slide.StartNote }.Concat(slide.StepNotes.Where(p => p.IsVisible).OrderBy(p => p.Tick)).ToList();
+                var slideParts = new[] { Tuple.Create((Slide.TapBase) slide.StartNote, true, false) }.Concat(
+                    slide.StepNotes.OrderBy(p => p.Tick).Select(p => Tuple.Create((Slide.TapBase) p, p.IsVisible, p.IsCurve))
+                ).ToList();
 
-                int stepHead = bg.LastOrDefault(p => p.Tick <= HeadTick)?.Tick ?? bg[0].Tick;
-                int stepTail = bg.FirstOrDefault(p => p.Tick >= tailTick)?.Tick ?? bg[bg.Count - 1].Tick;
-                int visibleHead = visibleSteps.LastOrDefault(p => p.Tick <= HeadTick)?.Tick ?? visibleSteps[0].Tick;
-                int visibleTail = visibleSteps.FirstOrDefault(p => p.Tick >= tailTick)?.Tick ?? visibleSteps[visibleSteps.Count - 1].Tick;
+                int stepHead = slideParts.LastOrDefault(p => p.Item1.Tick <= HeadTick && !p.Item3)?.Item1.Tick ?? slideParts.First().Item1.Tick;
+                int stepTail = slideParts.FirstOrDefault(p => p.Item1.Tick >= TailTick && !p.Item3)?.Item1.Tick ?? slideParts.Last().Item1.Tick;
+                int visibleHead = slideParts.LastOrDefault(p => p.Item1.Tick <= HeadTick && p.Item2)?.Item1.Tick ?? slideParts.First().Item1.Tick;
+                int visibleTail = slideParts.FirstOrDefault(p => p.Item1.Tick >= TailTick && p.Item2)?.Item1.Tick ?? slideParts.Last().Item1.Tick;
 
-                var steps = bg
-                    .Where(p => p.Tick >= stepHead && p.Tick <= stepTail)
+                var renderSteps = slideParts
+                    .Where(p => stepHead <= p.Item1.Tick && p.Item1.Tick <= stepTail)
                     .Select(p => new SlideStepElement()
                     {
-                        Point = new PointF((UnitLaneWidth + BorderThickness) * p.LaneIndex, GetYPositionFromTick(p.Tick)),
-                        Width = (UnitLaneWidth + BorderThickness) * p.Width - BorderThickness
+                        Point = new PointF((UnitLaneWidth + BorderThickness) * p.Item1.LaneIndex, GetYPositionFromTick(p.Item1.Tick)),
+                        Width = (UnitLaneWidth + BorderThickness) * p.Item1.Width - BorderThickness,
+                        IsCurve = p.Item3
                     });
-                var visibleStepPos = visibleSteps
-                    .Where(p => p.Tick >= visibleHead && p.Tick <= visibleTail)
-                    .Select(p => GetYPositionFromTick(p.Tick));
+                var renderTetureAnchors = slideParts
+                    .Where(p => p.Item2 && visibleHead <= p.Item1.Tick && p.Item1.Tick <= visibleTail)
+                    .Select(p => GetYPositionFromTick(p.Item1.Tick));
 
                 if (stepHead == stepTail) continue;
-                dc.DrawSlideBackground(steps, visibleStepPos, ShortNoteHeight);
+                dc.DrawSlideBackground(renderSteps, renderTetureAnchors, ShortNoteHeight, (float) LaneWidth);
             }
 
             var airs = Notes.Airs.Where(p => p.Tick >= HeadTick && p.Tick <= tailTick).ToList();
@@ -1663,7 +1707,7 @@ namespace Ched.UI
                 dc.DrawAirHoldLine(
                     (UnitLaneWidth + BorderThickness) * (note.ParentNote.LaneIndex + note.ParentNote.Width / 2f),
                     GetYPositionFromTick(note.StartTick),
-                    GetYPositionFromTick(note.StartTick + note.GetDuration()),
+                    GetYPositionFromTick(note.StartTick + note.GetDuration()) - ShortNoteHeight, // For shorter air-action notes
                     ShortNoteHeight);
             }
 
@@ -1684,13 +1728,27 @@ namespace Ched.UI
 
             foreach (var slide in slides)
             {
+                var wasLastSlideCurve = false;
                 foreach (var step in slide.StepNotes.OrderBy(p => p.TickOffset))
                 {
                     if (!Editable && !step.IsVisible) continue;
                     if (Notes.GetReferencedAir(step).Count() > 0) break; // AIR付き終点
                     RectangleF rect = GetRectFromNotePosition(step.Tick, step.LaneIndex, step.Width);
-                    if (step.IsVisible) dc.DrawSlideStep(rect);
-                    else dc.DrawBorder(rect);
+                    if (step.IsVisible)
+                    {
+                        dc.DrawSlideStep(rect);
+                        wasLastSlideCurve = false;
+                    }
+                    else if (step.IsCurve)
+                    {
+                        dc.DrawSlideCurve(rect, wasLastSlideCurve);
+                        wasLastSlideCurve = !wasLastSlideCurve;
+                    }
+                    else
+                    {
+                        wasLastSlideCurve = false;
+                        dc.DrawBorder(rect);
+                    }
                 }
             }
 
@@ -1731,7 +1789,9 @@ namespace Ched.UI
             {
                 foreach (var note in action.ActionNotes)
                 {
-                    dc.DrawAirAction(GetRectFromNotePosition(action.StartTick + note.Offset, action.ParentNote.LaneIndex, action.ParentNote.Width).Expand(-ShortNoteHeight * 0.28f));
+                    // Offset airAction drawing
+                    RectangleF noteRect = GetRectFromNotePosition(action.StartTick + note.Offset, action.ParentNote.LaneIndex, action.ParentNote.Width).OffsetInplace(0, -ShortNoteHeight).Expand(-ShortNoteHeight * 0.1f);
+                    dc.DrawAirAction(noteRect);
                 }
             }
 
@@ -2214,6 +2274,11 @@ namespace Ched.UI
             }
             ScoreEvents = score.Events;
             Invalidate();
+        }
+
+        public void ScrollRelative(double distance)
+        {
+            HeadTick = HeadTick + (int) ((TailTick - HeadTick) * distance);
         }
 
         public class NoteCollection

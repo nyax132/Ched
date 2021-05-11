@@ -56,7 +56,7 @@ namespace Ched.UI
                 NoteView.LaneBorderLightColor = isPreviewMode ? Color.FromArgb(40, 40, 40) : Color.FromArgb(60, 60, 60);
                 NoteView.LaneBorderDarkColor = isPreviewMode ? Color.FromArgb(10, 10, 10) : Color.FromArgb(30, 30, 30);
                 NoteView.UnitLaneWidth = isPreviewMode ? 4 : ApplicationSettings.Default.UnitLaneWidth;
-                NoteView.ShortNoteHeight = isPreviewMode ? 4 : 5;
+                NoteView.ShortNoteHeight = isPreviewMode ? 4 : 10;
                 NoteView.UnitBeatHeight = isPreviewMode ? 48 : ApplicationSettings.Default.UnitBeatHeight;
                 UpdateThumbHeight();
                 PreviewModeChanged?.Invoke(this, EventArgs.Empty);
@@ -90,7 +90,8 @@ namespace Ched.UI
                 Dock = DockStyle.Fill,
                 UnitBeatHeight = ApplicationSettings.Default.UnitBeatHeight,
                 UnitLaneWidth = ApplicationSettings.Default.UnitLaneWidth,
-                InsertAirWithAirAction = ApplicationSettings.Default.InsertAirWithAirAction
+                InsertAirWithAirAction = ApplicationSettings.Default.InsertAirWithAirAction,
+                IsFollowWhenPlaying = ApplicationSettings.Default.IsFollowWhenPlaying,
             };
 
             PreviewManager = new SoundPreviewManager(this);
@@ -196,6 +197,8 @@ namespace Ched.UI
 
             NoteView.NewNoteType = NoteType.Tap;
             NoteView.EditMode = EditMode.Edit;
+
+            SetupHotkeys();
 
             LoadEmptyBook();
             ShortcutManager.NotifyUpdateShortcut();
@@ -653,11 +656,19 @@ namespace Ched.UI
             {
                 NoteView.NewNoteType = NoteType.Slide;
                 NoteView.IsNewSlideStepVisible = false;
+                NoteView.IsNewSlideStepCurve = false;
             });
             commandSource.RegisterCommand(Commands.SelectSlideStep, MainFormStrings.SlideStep, () =>
             {
                 NoteView.NewNoteType = NoteType.Slide;
                 NoteView.IsNewSlideStepVisible = true;
+                NoteView.IsNewSlideStepCurve = false;
+            });
+            commandSource.RegisterCommand(Commands.SelectSlideStep, MainFormStrings.SlideCurve, () =>
+            {
+                NoteView.NewNoteType = NoteType.Slide;
+                NoteView.IsNewSlideStepVisible = false;
+                NoteView.IsNewSlideStepCurve = true;
             });
             commandSource.RegisterCommand(Commands.SelectAir, "AIR", () =>
             {
@@ -973,6 +984,7 @@ namespace Ched.UI
             var holdButton = shortcutItemBuilder.BuildItem(Commands.SelectHold, "HOLD", Resources.HoldIcon);
             var slideButton = shortcutItemBuilder.BuildItem(Commands.SelectSlide, "SLIDE", Resources.SlideIcon);
             var slideStepButton = shortcutItemBuilder.BuildItem(Commands.SelectSlideStep, MainFormStrings.SlideStep, Resources.SlideStepIcon);
+            var slideCurveButton = shortcutItemBuilder.BuildItem(Commands.SelectSlideCurve, MainFormStrings.SlideCurve, Resources.SlideCurveIcon);
             var airActionButton = shortcutItemBuilder.BuildItem(Commands.SelectAirAction, "AIR-ACTION", Resources.AirActionIcon);
             var flickButton = shortcutItemBuilder.BuildItem(Commands.SelectFlick, "FLICK", Resources.FlickIcon);
             var damageButton = shortcutItemBuilder.BuildItem(Commands.SelectDamage, "DAMAGE", Resources.DamgeIcon);
@@ -981,7 +993,7 @@ namespace Ched.UI
             {
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };
-            airKind.Text = "AIR";
+            airKind.Text = "AIR (A/D)";
             airKind.Click += (s, e) => noteView.NewNoteType = NoteType.Air;
             airKind.DropDown.Items.AddRange(new ToolStripItem[]
             {
@@ -1039,8 +1051,9 @@ namespace Ched.UI
                 tapButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Tap);
                 exTapButton.Checked = noteView.NewNoteType.HasFlag(NoteType.ExTap);
                 holdButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Hold);
-                slideButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Slide) && !noteView.IsNewSlideStepVisible;
-                slideStepButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Slide) && noteView.IsNewSlideStepVisible;
+                slideButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Slide) && !noteView.IsNewSlideStepVisible && !noteView.IsNewSlideStepCurve;
+                slideStepButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Slide) && noteView.IsNewSlideStepVisible && !noteView.IsNewSlideStepCurve;
+                slideCurveButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Slide) && !noteView.IsNewSlideStepVisible && noteView.IsNewSlideStepCurve;
                 airKind.Checked = noteView.NewNoteType.HasFlag(NoteType.Air);
                 airActionButton.Checked = noteView.NewNoteType.HasFlag(NoteType.AirAction);
                 flickButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Flick);
@@ -1067,9 +1080,121 @@ namespace Ched.UI
 
             return new ToolStrip(new ToolStripItem[]
             {
-                tapButton, exTapButton, holdButton, slideButton, slideStepButton, airKind, airActionButton, flickButton, damageButton,
+                tapButton, exTapButton, holdButton, slideButton, slideStepButton, slideCurveButton, airKind, airActionButton, flickButton, damageButton,
                 quantizeComboBox
             });
+        }
+    
+        private void SetupHotkeys()
+        {
+            // https://github.com/TinyTany/M4ple-Editor/blob/master/NE4S/MainForm.cs#L274
+            NoteView.KeyDown += (s, e) =>
+            {
+                // If any modifier keys are pressed, do not use hotkey
+                if (ModifierKeys.HasFlag(Keys.Control) || ModifierKeys.HasFlag(Keys.Shift) || ModifierKeys.HasFlag(Keys.Alt)) return;
+                switch (e.KeyCode)
+                {
+                    case Keys.Q:
+                        NoteView.EditMode = EditMode.Edit;
+                        break;
+                    case Keys.W:
+                        NoteView.EditMode = EditMode.Select;
+                        break;
+                    case Keys.E:
+                        NoteView.EditMode = EditMode.Erase;
+                        break;
+                    case Keys.T:
+                        NoteView.NewNoteType = NoteType.Tap;
+                        break;
+                    case Keys.Y:
+                        NoteView.NewNoteType = NoteType.ExTap;
+                        break;
+                    case Keys.H:
+                        NoteView.NewNoteType = NoteType.Hold;
+                        break;
+                    case Keys.S:
+                        NoteView.NewNoteType = NoteType.Slide;
+                        NoteView.IsNewSlideStepVisible = false;
+                        NoteView.IsNewSlideStepCurve = false;
+                        break;
+                    case Keys.X:
+                        NoteView.NewNoteType = NoteType.Slide;
+                        NoteView.IsNewSlideStepVisible = true;
+                        NoteView.IsNewSlideStepCurve = false;
+                        break;
+                    case Keys.C:
+                        NoteView.NewNoteType = NoteType.Slide;
+                        NoteView.IsNewSlideStepVisible = false;
+                        NoteView.IsNewSlideStepCurve = true;
+                        break;
+                    case Keys.A:
+                        if (NoteView.EditMode != EditMode.Edit || NoteView.NewNoteType != NoteType.Air || NoteView.AirDirection.VerticalDirection != VerticalAirDirection.Up)
+                        {
+                            NoteView.NewNoteType = NoteType.Air;
+                            NoteView.AirDirection = new AirDirection(VerticalAirDirection.Up, HorizontalAirDirection.Center);
+                        } else
+                        {
+                            // Cycle through possible horizontal directions
+                            switch (NoteView.AirDirection.HorizontalDirection)
+                            {
+                                case HorizontalAirDirection.Center:
+                                    NoteView.AirDirection = new AirDirection(VerticalAirDirection.Up, HorizontalAirDirection.Left);
+                                    break;
+                                case HorizontalAirDirection.Left:
+                                    NoteView.AirDirection = new AirDirection(VerticalAirDirection.Up, HorizontalAirDirection.Right);
+                                    break;
+                                case HorizontalAirDirection.Right:
+                                    NoteView.AirDirection = new AirDirection(VerticalAirDirection.Up, HorizontalAirDirection.Center);
+                                    break;
+                            }
+                        }
+                        break;
+                    case Keys.D:
+                        if (NoteView.EditMode != EditMode.Edit || NoteView.NewNoteType != NoteType.Air || NoteView.AirDirection.VerticalDirection != VerticalAirDirection.Down)
+                        {
+                            NoteView.NewNoteType = NoteType.Air;
+                            NoteView.AirDirection = new AirDirection(VerticalAirDirection.Down, HorizontalAirDirection.Center);
+                        }
+                        else
+                        {
+                            // Cycle through possible horizontal directions
+                            switch (NoteView.AirDirection.HorizontalDirection)
+                            {
+                                case HorizontalAirDirection.Center:
+                                    NoteView.AirDirection = new AirDirection(VerticalAirDirection.Down, HorizontalAirDirection.Left);
+                                    break;
+                                case HorizontalAirDirection.Left:
+                                    NoteView.AirDirection = new AirDirection(VerticalAirDirection.Down, HorizontalAirDirection.Right);
+                                    break;
+                                case HorizontalAirDirection.Right:
+                                    NoteView.AirDirection = new AirDirection(VerticalAirDirection.Down, HorizontalAirDirection.Center);
+                                    break;
+                            }
+                        }
+                        break;
+                    case Keys.Z:
+                        NoteView.NewNoteType = NoteType.AirAction;
+                        break;
+                    case Keys.F:
+                        NoteView.NewNoteType = NoteType.Flick;
+                        break;
+                    case Keys.V:
+                        NoteView.NewNoteType = NoteType.Damage;
+                        break;
+                    case Keys.D1:
+                        NoteView.ScrollRelative(-1.0);
+                        break;
+                    case Keys.D2:
+                        NoteView.ScrollRelative(-0.1);
+                        break;
+                    case Keys.D3:
+                        NoteView.ScrollRelative(0.1);
+                        break;
+                    case Keys.D4:
+                        NoteView.ScrollRelative(1.0);
+                        break;
+                }
+            };
         }
     }
 }

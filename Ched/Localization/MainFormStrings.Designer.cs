@@ -304,6 +304,15 @@ namespace Ched.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 再生時にスクロール.
+        /// </summary>
+        public static string FollowWhenPlaying {
+            get {
+                return ResourceManager.GetString("FollowWhenPlaying", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ヘルプを開く.
         /// </summary>
         public static string Help {
@@ -606,6 +615,15 @@ namespace Ched.Localization {
         public static string SelectToEnd {
             get {
                 return ResourceManager.GetString("SelectToEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SLIDE(湾曲).
+        /// </summary>
+        public static string SlideCurve {
+            get {
+                return ResourceManager.GetString("SlideCurve", resourceCulture);
             }
         }
         
