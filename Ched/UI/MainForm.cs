@@ -446,7 +446,7 @@ namespace Ched.UI
 
         protected void SetText(string filePath)
         {
-            Text = "Ched" + (string.IsNullOrEmpty(filePath) ? "" : " - " + Path.GetFileName(filePath)) + (OperationManager.IsChanged ? " *" : "");
+            Text = "ChedPlus" + (string.IsNullOrEmpty(filePath) ? "" : " - " + Path.GetFileName(filePath)) + (OperationManager.IsChanged ? " *" : "");
         }
 
         private void UpdateThumbHeight()
