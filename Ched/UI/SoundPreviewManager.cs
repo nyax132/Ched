@@ -89,7 +89,7 @@ namespace Ched.UI
             StartTick = startTick;
 
             double startTime = timeCalculator.GetTimeFromTick(startTick);
-            double headGap = -context.MusicSource.Latency - startTime;
+            double headGap = Math.Max(-context.MusicSource.Latency - startTime, 0.0);
             elapsedTick = 0;
             Task.Run(() =>
             {
@@ -102,7 +102,7 @@ namespace Ched.UI
                     System.Threading.Thread.Sleep(TimeSpan.FromSeconds(headGap));
                 }
                 if (!Playing) return;
-                SoundManager.Play(context.MusicSource.FilePath, startTime + context.MusicSource.Latency, PlaySpeed);
+                SoundManager.Play(context.MusicSource.FilePath, startTime + context.MusicSource.Latency + headGap, PlaySpeed);
             })
             .ContinueWith(p =>
             {
