@@ -213,6 +213,8 @@ namespace Ched.UI
             {
                 MessageBox.Show(this, string.Join("\n", new[] { ErrorStrings.PluginNotSupported }.Concat(PluginManager.InvalidFiles)), Program.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            ShellExtensions.FileAssociations.EnsureAssociationsSet();
         }
 
         public MainForm(string filePath) : this()
