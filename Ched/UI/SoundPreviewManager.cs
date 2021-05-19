@@ -90,7 +90,7 @@ namespace Ched.UI
                     System.Threading.Thread.Sleep(TimeSpan.FromSeconds(headGap));
                 }
                 if (!Playing) return;
-                SoundManager.Play(context.MusicSource.FilePath, startTime + context.MusicSource.Latency);
+                SoundManager.Play(context.MusicSource.FilePath, startTime + context.MusicSource.Latency, 1.0);
             })
             .ContinueWith(p =>
             {
