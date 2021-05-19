@@ -39,6 +39,18 @@ namespace Ched.UI
         public bool IsStopAtLastNote { get; set; }
         public bool IsSupported { get { return SoundManager.IsSupported; } }
 
+
+        private bool isPlayAtHalfSpeed { get; set; }
+        public bool IsPlayAtHalfSpeed
+        {
+            get { return isPlayAtHalfSpeed; }
+            set {
+                isPlayAtHalfSpeed = value;
+                PlaySpeed = isPlayAtHalfSpeed ? 0.5 : 1.0;
+            }
+        }
+        private double PlaySpeed { get; set; }
+
         public SoundPreviewManager(Control syncControl)
         {
             SyncControl = syncControl;
@@ -90,7 +102,7 @@ namespace Ched.UI
                     System.Threading.Thread.Sleep(TimeSpan.FromSeconds(headGap));
                 }
                 if (!Playing) return;
-                SoundManager.Play(context.MusicSource.FilePath, startTime + context.MusicSource.Latency, 1.0);
+                SoundManager.Play(context.MusicSource.FilePath, startTime + context.MusicSource.Latency, PlaySpeed);
             })
             .ContinueWith(p =>
             {
@@ -120,7 +132,7 @@ namespace Ched.UI
             int elapsed = now - LastSystemTick;
             LastSystemTick = now;
 
-            elapsedTick += PreviewContext.TicksPerBeat * BpmElement.Value.Bpm * elapsed / 60 / 1000;
+            elapsedTick += PreviewContext.TicksPerBeat * BpmElement.Value.Bpm * elapsed / 60 / 1000 * PlaySpeed;
             CurrentTick = (int)(InitialTick + elapsedTick);
             if (CurrentTick >= StartTick)
                 TickUpdated?.Invoke(this, new TickUpdatedEventArgs(Math.Max(CurrentTick, 0)));

@@ -96,6 +96,7 @@ namespace Ched.UI
 
             PreviewManager = new SoundPreviewManager(this);
             PreviewManager.IsStopAtLastNote = ApplicationSettings.Default.IsPreviewAbortAtLastNote;
+            PreviewManager.IsPlayAtHalfSpeed = ApplicationSettings.Default.IsPlayAtHalfSpeed;
             PreviewManager.TickUpdated += (s, e) => NoteView.CurrentTick = e.Tick;
             PreviewManager.ExceptionThrown += (s, e) => MessageBox.Show(this, ErrorStrings.PreviewException, Program.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -894,6 +895,19 @@ namespace Ched.UI
             {
                 Checked = ApplicationSettings.Default.IsFollowWhenPlaying
             };
+            
+            var isPlayAtHalfSpeedItem = new ToolStripMenuItem(MainFormStrings.PlayAtHalfSpeed, null, (s, e) =>
+            {
+                var item = s as ToolStripMenuItem;
+                item.Checked = !item.Checked;
+                PreviewManager.IsPlayAtHalfSpeed = item.Checked;
+                ApplicationSettings.Default.IsPlayAtHalfSpeed = item.Checked;
+            })
+            {
+                Checked = ApplicationSettings.Default.IsPlayAtHalfSpeed
+            };
+            PreviewManager.Started += (s, e) => isPlayAtHalfSpeedItem.Enabled = false;
+            PreviewManager.Finished += (s, e) => isPlayAtHalfSpeedItem.Enabled = true;
 
             var playItem = shortcutItemBuilder.BuildItem(Commands.PlayPreview, MainFormStrings.Play);
 
@@ -905,7 +919,7 @@ namespace Ched.UI
             var playMenuItems = new ToolStripItem[]
             {
                 playItem, stopItem, new ToolStripSeparator(),
-                isAbortAtLastNoteItem, isFollowWhenPlayingItem
+                isAbortAtLastNoteItem, isFollowWhenPlayingItem, isPlayAtHalfSpeedItem
             };
 
             var helpMenuItems = new ToolStripItem[]

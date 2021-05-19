@@ -339,4 +339,7 @@
   <data name="SlideCurve" xml:space="preserve">
     <value>SLIDE (CURVE)</value>
   </data>
+  <data name="PlayAtHalfSpeed" xml:space="preserve">
+    <value>Play at Half Speed</value>
+  </data>
 </root>

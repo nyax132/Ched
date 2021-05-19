@@ -502,6 +502,15 @@ namespace Ched.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 半分の速度で再生.
+        /// </summary>
+        public static string PlayAtHalfSpeed {
+            get {
+                return ResourceManager.GetString("PlayAtHalfSpeed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 再生(&amp;P).
         /// </summary>
         public static string PlayMenu {

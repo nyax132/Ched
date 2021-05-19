@@ -54,5 +54,13 @@ namespace Ched.Configuration
             get { return ((bool)(this["IsFollowWhenPlaying"])); }
             set { this["IsFollowWhenPlaying"] = value; }
         }
+
+        [UserScopedSetting]
+        [DefaultSettingValue("False")]
+        public bool IsPlayAtHalfSpeed
+        {
+            get { return ((bool)(this["IsPlayAtHalfSpeed"])); }
+            set { this["IsPlayAtHalfSpeed"] = value; }
+        }
     }
 }

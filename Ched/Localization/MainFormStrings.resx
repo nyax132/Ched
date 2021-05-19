@@ -339,4 +339,7 @@
   <data name="SlideCurve" xml:space="preserve">
     <value>SLIDE(湾曲)</value>
   </data>
+  <data name="PlayAtHalfSpeed" xml:space="preserve">
+    <value>半分の速度で再生</value>
+  </data>
 </root>
