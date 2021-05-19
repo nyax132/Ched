@@ -32,6 +32,9 @@
   - Shortcut editor
   - Export hotkey (Ctrl + E)
 - Made sus export distinct from upstream Ched
+- Added file association, double clicking on .chs files will open the editor
+- Added 'Play at half speed' option in play menu
+- Switched to ManagedBass audio library
 
 Look in the releases panel to the right.
 
