@@ -26,6 +26,7 @@ namespace Ched.Drawing
 
         public static void DrawExTapDown(this DrawingContext dc, RectangleF rect)
         {
+            //Console.WriteLine(String.Format("extapdown at {0} {1}", rect.Y, rect.Height));
             dc.Graphics.DrawTappableNote(rect, dc.ColorProfile.ExTapDownColor, dc.ColorProfile.BorderColor);
         }
 
