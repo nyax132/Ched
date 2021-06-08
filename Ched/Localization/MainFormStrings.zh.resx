@@ -333,4 +333,13 @@
   <data name="ResetAll" xml:space="preserve">
     <value>重置</value>
   </data>
+  <data name="FollowWhenPlaying" xml:space="preserve">
+    <value>播放时滚动游戏场</value>
+  </data>
+  <data name="PlayAtHalfSpeed" xml:space="preserve">
+    <value>半速播放</value>
+  </data>
+  <data name="SlideCurve" xml:space="preserve">
+    <value>SLIDE(湾点)</value>
+  </data>
 </root>
