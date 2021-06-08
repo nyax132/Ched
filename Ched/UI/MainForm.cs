@@ -732,6 +732,7 @@ namespace Ched.UI
                 if (NoteView.NewNoteType != NoteType.ExTap)
                 {
                     NoteView.NewNoteType = NoteType.ExTap;
+                    NoteView.ExTapDirection = ExTapDirection.None;
                     return;
                 }
                 NoteView.ExTapDirection = GetNextExTapDirection(NoteView.ExTapDirection);
