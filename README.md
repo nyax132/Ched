@@ -40,6 +40,9 @@
   ![extap](./resources/extap.png)
 
 - Pulled chinese translation from [kami-poi's fork](https://github.com/kami-poi/Ched/commit/38838d692e495c722ac10a4492da311bec9c8010)
+- Fix gradient bug of tap notes at large measure numbers (left is new, right is old)
+
+  ![gradient bug](./resources/gradientbug.png)
 
 Look in the releases panel to the right.
 
