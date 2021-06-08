@@ -27,10 +27,12 @@ namespace Ched.Drawing
             using (var path = rect.ToRoundedPath(rect.Height * 0.3f))
             {
                 // https://docs.microsoft.com/en-us/dotnet/desktop/winforms/advanced/how-to-create-a-path-gradient
-                var gradientBrush = new PathGradientBrush(path);
-                gradientBrush.CenterColor = InterpolateColors(colors, 0.5f);
-                gradientBrush.SurroundColors = path.PathPoints.Select((p) => InterpolateColors(colors, (p.Y - rect.Y) / rect.Height)).ToArray();
-                g.FillRectangle(gradientBrush, path.GetBounds());
+                using (var brush = new PathGradientBrush(path))
+                {
+                    brush.CenterColor = InterpolateColors(colors, 0.5f);
+                    brush.SurroundColors = path.PathPoints.Select((p) => InterpolateColors(colors, (p.Y - rect.Y) / rect.Height)).ToArray();
+                    g.FillRectangle(brush, path.GetBounds());
+                }
             }
         }
 
