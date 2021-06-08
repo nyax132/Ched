@@ -35,6 +35,9 @@
 - Added file association, double clicking on .chs files will open the editor
 - Added 'Play at half speed' option in play menu
 - Switched to ManagedBass audio library
+- Implemented ExTap notes with downwards and central flourishes + import/export function
+
+  ![extap](./resources/extap.png)
 
 Look in the releases panel to the right.
 
