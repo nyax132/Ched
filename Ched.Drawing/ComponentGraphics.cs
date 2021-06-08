@@ -24,14 +24,15 @@ namespace Ched.Drawing
 
         public static void DrawNoteBase(this Graphics g, RectangleF rect, GradientColor colors)
         {
-            using (var path = rect.ToRoundedPath(rect.Height * 0.3f))
+            var upsizeRect = rect.Expand(2);
+            using (var path = upsizeRect.ToRoundedPath(upsizeRect.Height * 0.4f))
             {
                 // https://docs.microsoft.com/en-us/dotnet/desktop/winforms/advanced/how-to-create-a-path-gradient
                 using (var brush = new PathGradientBrush(path))
                 {
                     brush.CenterColor = InterpolateColors(colors, 0.5f);
                     brush.SurroundColors = path.PathPoints.Select((p) => InterpolateColors(colors, (p.Y - rect.Y) / rect.Height)).ToArray();
-                    g.FillRectangle(brush, path.GetBounds());
+                    g.FillRectangle(brush, rect);
                 }
             }
         }
@@ -83,11 +84,12 @@ namespace Ched.Drawing
             var key = Tuple.Create(colors, progress);
             if (!memoInterpolateColors.ContainsKey(key))
             {
-                var invprogress = 1 - progress;
+                var realProgress = Math.Min(Math.Max(progress, 0.0f), 1.0f);
+                var invprogress = 1 - realProgress;
                 var newColor = Color.FromArgb(
-                   (int)(colors.DarkColor.R * invprogress + colors.LightColor.R * progress),
-                   (int)(colors.DarkColor.G * invprogress + colors.LightColor.G * progress),
-                   (int)(colors.DarkColor.B * invprogress + colors.LightColor.B * progress));
+                   (int)(colors.DarkColor.R * invprogress + colors.LightColor.R * realProgress),
+                   (int)(colors.DarkColor.G * invprogress + colors.LightColor.G * realProgress),
+                   (int)(colors.DarkColor.B * invprogress + colors.LightColor.B * realProgress));
                 memoInterpolateColors[key] = newColor;
             }
             return memoInterpolateColors[key];

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -1623,6 +1623,7 @@ namespace Ched.UI
             pe.Graphics.Transform = GetDrawingMatrix(prevMatrix);
 
             var dc = new DrawingContext(pe.Graphics, ColorProfile);
+            dc.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
             float laneWidth = LaneWidth;
             int tailTick = HeadTick + (int)(ClientSize.Height * UnitBeatTick / UnitBeatHeight);
