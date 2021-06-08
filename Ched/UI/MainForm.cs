@@ -24,6 +24,8 @@ namespace Ched.UI
     public partial class MainForm : Form
     {
         private event EventHandler PreviewModeChanged;
+        private event EventHandler RecorderModeChanged;
+        private event EventHandler RecorderInputChanged;
 
         private readonly string UserShortcutKeySourcePath = "keybindings.json";
         private readonly string FileExtension = ".chs";
@@ -953,6 +955,102 @@ namespace Ched.UI
                 isAbortAtLastNoteItem, isFollowWhenPlayingItem, isPlayAtHalfSpeedItem
             };
 
+            var hideRecorderItem = new ToolStripMenuItem("Hide recorded input", null, (s, e) =>
+            {
+                var item = s as ToolStripMenuItem;
+                RecorderModeChanged?.Invoke(this, EventArgs.Empty);
+                item.Checked = true;
+                NoteView.IsShowRecorder = false;
+                Recorder.RecordingMode = Recorder.RecordingModeType.RECORDING_DISABLED;
+            })
+            { Checked = true };
+            NoteView.IsShowRecorder = false;
+            Recorder.RecordingMode = Recorder.RecordingModeType.RECORDING_DISABLED;
+            var showRecorderItem = new ToolStripMenuItem("Show recorded input", null, (s, e) =>
+            {
+                var item = s as ToolStripMenuItem;
+                RecorderModeChanged?.Invoke(this, EventArgs.Empty);
+                item.Checked = true;
+                NoteView.IsShowRecorder = true;
+                Recorder.RecordingMode = Recorder.RecordingModeType.RECORDING_DISABLED;
+            });
+            var overwriteRecorderItem = new ToolStripMenuItem("Record when playing (Overwrite)", null, (s, e) =>
+            {
+                var item = s as ToolStripMenuItem;
+                RecorderModeChanged?.Invoke(this, EventArgs.Empty);
+                item.Checked = true;
+                NoteView.IsShowRecorder = true;
+                Recorder.RecordingMode = Recorder.RecordingModeType.RECORDING_OVERWRITE;
+            });
+            var addRecorderItem = new ToolStripMenuItem("Record when playing (Add)", null, (s, e) =>
+            {
+                var item = s as ToolStripMenuItem;
+                RecorderModeChanged?.Invoke(this, EventArgs.Empty);
+                item.Checked = true;
+                NoteView.IsShowRecorder = true;
+                Recorder.RecordingMode = Recorder.RecordingModeType.RECORDING_ADD;
+            });
+
+            RecorderModeChanged += (s, e) =>
+            {
+                hideRecorderItem.Checked = false;
+                showRecorderItem.Checked = false;
+                overwriteRecorderItem.Checked = false;
+                addRecorderItem.Checked = false;
+            };
+
+            var clearRecorderItem = new ToolStripMenuItem("Clear Recorder", null, (s, e) =>
+            {
+                var item = s as ToolStripMenuItem;
+                Recorder.Clear();
+                NoteView.Invalidate();
+            });
+
+            var yuanconKeyboardRecorderItem = new ToolStripMenuItem("Yuancon (Keyboard)", null, (s, e) =>
+            {
+                var item = s as ToolStripMenuItem;
+                RecorderInputChanged?.Invoke(this, EventArgs.Empty);
+                item.Checked = true;
+                Recorder.InputMode = Recorder.InputModeType.INPUT_KEYBOARD_YUANCON;
+            })
+            { Checked = true };
+            var tasollerKeyboardRecorderItem = new ToolStripMenuItem("Tasoller (Keyboard)", null, (s, e) =>
+            {
+                var item = s as ToolStripMenuItem;
+                RecorderInputChanged?.Invoke(this, EventArgs.Empty);
+                item.Checked = true;
+                Recorder.InputMode = Recorder.InputModeType.INPUT_KEYBOARD_TASOLLER;
+            });
+            var yuanconHIDRecorderItem = new ToolStripMenuItem("Yuancon (HID)", null, (s, e) =>
+            {
+                var item = s as ToolStripMenuItem;
+                RecorderInputChanged?.Invoke(this, EventArgs.Empty);
+                item.Checked = true;
+                Recorder.InputMode = Recorder.InputModeType.INPUT_HID_YUANCON;
+            });
+            var tasollerHIDRecorderItem = new ToolStripMenuItem("Tasoller (HID)", null, (s, e) =>
+            {
+                var item = s as ToolStripMenuItem;
+                RecorderInputChanged?.Invoke(this, EventArgs.Empty);
+                item.Checked = true;
+                Recorder.InputMode = Recorder.InputModeType.INPUT_HID_TASOLLER;
+            });
+
+            RecorderInputChanged += (s, e) =>
+            {
+                yuanconKeyboardRecorderItem.Checked = false;
+                tasollerKeyboardRecorderItem.Checked = false;
+                yuanconHIDRecorderItem.Checked = false;
+                tasollerHIDRecorderItem.Checked = false;
+            };
+
+            var recorderMenuItems = new ToolStripItem[]
+            {
+                hideRecorderItem, showRecorderItem, overwriteRecorderItem, addRecorderItem, new ToolStripSeparator(),
+                clearRecorderItem, new ToolStripSeparator(),
+                yuanconKeyboardRecorderItem, tasollerKeyboardRecorderItem, yuanconHIDRecorderItem, tasollerHIDRecorderItem
+            };
+
             var helpMenuItems = new ToolStripItem[]
             {
                 shortcutItemBuilder.BuildItem(Commands.ShowHelp, MainFormStrings.Help),
@@ -978,6 +1076,7 @@ namespace Ched.UI
                 new ToolStripMenuItem(MainFormStrings.InsertMenu, null, insertMenuItems),
                 // PreviewManager初期化後じゃないといけないのダメ設計でしょ
                 new ToolStripMenuItem(MainFormStrings.PlayMenu, null, playMenuItems) { Enabled = PreviewManager.IsSupported },
+                new ToolStripMenuItem("Recorder", null, recorderMenuItems),
                 new ToolStripMenuItem(MainFormStrings.HelpMenu, null, helpMenuItems)
             });
             return menu;

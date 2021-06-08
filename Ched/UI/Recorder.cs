@@ -12,7 +12,7 @@ namespace Ched.UI
         public static int N_LANES = N_GROUND + N_AIR;
         private static int TICK_INF = 999999999;
 
-        private static Key[] KEYBOARD_YUANCON_LAYOUT = { 
+        private static Key[] KEYBOARD_YUANCON_LAYOUT = {
             Key.D6, Key.D5, Key.D4, Key.D3, Key.D2, Key.D1, Key.Z, Key.Y,
             Key.X, Key.W, Key.V, Key.U, Key.T, Key.S, Key.R, Key.Q,
             Key.P, Key.O, Key.N, Key.M, Key.L, Key.K, Key.J, Key.I,
@@ -21,16 +21,35 @@ namespace Ched.UI
             Key.Oem6, Key.Oem5, Key.Oem1
         };
 
+        private static Key[] KEYBOARD_TASOLLER_LAYOUT = {
+            Key.A, Key.D1, Key.Z, Key.Q, Key.S, Key.D2, Key.X, Key.W,
+            Key.D, Key.D3, Key.C, Key.E, Key.F, Key.D4, Key.V, Key.R,
+            Key.G, Key.D5, Key.B, Key.T, Key.H, Key.D6, Key.N, Key.Y,
+            Key.J, Key.D7, Key.M, Key.U, Key.K, Key.D8, Key.OemComma, Key.I,
+            Key.Oem2, Key.Oem7, Key.OemPeriod,
+            Key.Oem1, Key.Oem6, Key.Oem4
+        };
+
         private bool IsRecording = false;
         private Interval RecordingInterval = (0, 0);
-        private RecordingModeType RecordingMode;
-        private InputModeType InputMode;
+        private RecordingModeType recordingMode;
+        private InputModeType inputMode;
 
         private Interval LastFetchedInterval = (0, 0);
         private List<List<Interval>> LastFetchedData = null;
 
         private List<PlaybackLane> PlaybackLanes;
         private List<RecordingLane> RecordingLanes;
+
+        public InputModeType InputMode {
+            get { return inputMode; }
+            set { inputMode = value; }
+        }
+        public RecordingModeType RecordingMode
+        {
+            get { return recordingMode; }
+            set { recordingMode = value; }
+        }
 
         public Recorder()
         {
@@ -41,8 +60,8 @@ namespace Ched.UI
                 PlaybackLanes.Add(new PlaybackLane());
                 RecordingLanes.Add(new RecordingLane());
             }
-            RecordingMode = RecordingModeType.RECORDING_OVERWRITE;
-            InputMode = InputModeType.INPUT_KEYBOARD_YUANCON;
+            recordingMode = RecordingModeType.RECORDING_OVERWRITE;
+            inputMode = InputModeType.INPUT_KEYBOARD_YUANCON;
         }
 
         public List<List<Interval>> GetRecordedData(int fromTick, int toTick)
@@ -65,7 +84,7 @@ namespace Ched.UI
             {
                 var lane = new PlaybackLane { };
                 lane.AddIntervals(RecordingLanes[i].GetVisibleIntervals(duringRecordViewport));
-                switch (RecordingMode)
+                switch (recordingMode)
                 {
                     case RecordingModeType.RECORDING_OVERWRITE:
                         lane.AddIntervals(PlaybackLanes[i].GetVisibleIntervals(preRecordViewport));
@@ -82,13 +101,9 @@ namespace Ched.UI
             return data;
         }
 
-        public void SetRecordingMode(RecordingModeType recordingMode)
-        {
-            RecordingMode = recordingMode;
-        }
-
         public void Start(int tick)
         {
+            if (recordingMode == RecordingModeType.RECORDING_DISABLED) return;
             IsRecording = true;
             RecordingInterval = (tick, tick);
             for (var i = 0; i < RecordingLanes.Count(); i++)
@@ -99,20 +114,39 @@ namespace Ched.UI
 
         public void Update(int tick)
         {
+            if (!IsRecording) return;
             RecordingInterval.EndTick = tick;
+            var ioData = DoIO();
             for (var i = 0; i < RecordingLanes.Count(); i++)
             {
-                RecordingLanes[i].Update(tick, Keyboard.IsKeyDown(KEYBOARD_YUANCON_LAYOUT[i]));
+                RecordingLanes[i].Update(tick, ioData[i]);
             }
+        }
+
+        private List<bool> DoIO()
+        {
+            switch (InputMode)
+            {
+                case InputModeType.INPUT_KEYBOARD_YUANCON:
+                    return KEYBOARD_YUANCON_LAYOUT.Select(p => Keyboard.IsKeyDown(p)).ToList();
+                case InputModeType.INPUT_KEYBOARD_TASOLLER:
+                    return KEYBOARD_TASOLLER_LAYOUT.Select(p => Keyboard.IsKeyDown(p)).ToList();
+                case InputModeType.INPUT_HID_YUANCON:
+                    return KEYBOARD_YUANCON_LAYOUT.Select(p => false).ToList();
+                case InputModeType.INPUT_HID_TASOLLER:
+                    return KEYBOARD_YUANCON_LAYOUT.Select(p => false).ToList();
+            }
+            throw new ArgumentException();
         }
 
         public void Stop()
         {
+            if (!IsRecording) return;
             IsRecording = false;
             for (var i = 0; i < RecordingLanes.Count(); i++)
             {
                 RecordingLanes[i].Update(RecordingInterval.EndTick, false);
-                switch (RecordingMode)
+                switch (recordingMode)
                 {
                     case RecordingModeType.RECORDING_OVERWRITE:
                         RecordingLanes[i].AddIntervals(PlaybackLanes[i].GetVisibleIntervals((0, RecordingInterval.StartTick)));
@@ -130,8 +164,19 @@ namespace Ched.UI
             LastFetchedData = null;
         }
 
+        public void Clear()
+        {
+            LastFetchedData = null;
+            for (var i = 0; i < RecordingLanes.Count(); i++)
+            {
+                RecordingLanes[i].Clear();
+                PlaybackLanes[i].Clear();
+            }
+        }
+
         public enum RecordingModeType
         {
+            RECORDING_DISABLED,
             RECORDING_OVERWRITE,
             RECORDING_ADD
         }

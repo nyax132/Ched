@@ -55,6 +55,7 @@ namespace Ched.UI
         private bool isNewSlideStepCurve = true;
         private bool playing = false;
         private bool isFollowWhenPlaying = false;
+        private bool isShowRecorder = false;
 
         /// <summary>
         /// 小節の区切り線の色を設定します。
@@ -335,9 +336,15 @@ namespace Ched.UI
         public bool IsFollowWhenPlaying
         {
             get { return isFollowWhenPlaying; }
-            set
-            {
-                isFollowWhenPlaying = value;
+            set { isFollowWhenPlaying = value; }
+        }
+
+        public bool IsShowRecorder
+        {
+            get { return isShowRecorder; }
+            set { 
+                isShowRecorder = value;
+                Invalidate();
             }
         }
 
@@ -1681,31 +1688,34 @@ namespace Ched.UI
             }
 
             // Draw recorder output here
-            var recorderData = Recorder.GetRecordedData(HeadTick, TailTick);
-            for(int i = 0; i < Recorder.N_GROUND; i++)
+            if (IsShowRecorder)
             {
-                var laneIndex = i / 2;
-                foreach (var interval in recorderData[i])
+                var recorderData = Recorder.GetRecordedData(HeadTick, TailTick);
+                for (int i = 0; i < Recorder.N_GROUND; i++)
                 {
-                    dc.DrawRecorderGroundBackground(new RectangleF(
-                        (UnitLaneWidth + BorderThickness) * laneIndex + BorderThickness,
-                        GetYPositionFromTick(interval.StartTick),
-                        (UnitLaneWidth + BorderThickness) * 1 - BorderThickness,
-                        GetYPositionFromTick(interval.Duration)
-                        ));
+                    var laneIndex = i / 2;
+                    foreach (var interval in recorderData[i])
+                    {
+                        dc.DrawRecorderGroundBackground(new RectangleF(
+                            (UnitLaneWidth + BorderThickness) * laneIndex + BorderThickness,
+                            GetYPositionFromTick(interval.StartTick),
+                            (UnitLaneWidth + BorderThickness) * 1 - BorderThickness,
+                            GetYPositionFromTick(interval.Duration)
+                            ));
+                    }
                 }
-            }
 
-            for (int i = 0; i < Recorder.N_AIR; i++)
-            {
-                foreach (var interval in recorderData[i + Recorder.N_GROUND])
+                for (int i = 0; i < Recorder.N_AIR; i++)
                 {
-                    dc.DrawRecorderAirBackground(new RectangleF(
-                        (UnitLaneWidth + BorderThickness) * 16 + BorderThickness + UnitLaneWidth * i / 2,
-                        GetYPositionFromTick(interval.StartTick),
-                        (UnitLaneWidth + BorderThickness) / 2,
-                        GetYPositionFromTick(interval.Duration)
-                        ));
+                    foreach (var interval in recorderData[i + Recorder.N_GROUND])
+                    {
+                        dc.DrawRecorderAirBackground(new RectangleF(
+                            (UnitLaneWidth + BorderThickness) * 16 + BorderThickness + UnitLaneWidth * i / 2,
+                            GetYPositionFromTick(interval.StartTick),
+                            (UnitLaneWidth + BorderThickness) / 2,
+                            GetYPositionFromTick(interval.Duration)
+                            ));
+                    }
                 }
             }
 
