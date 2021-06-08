@@ -655,7 +655,7 @@ namespace Ched.UI
             });
 
             commandSource.RegisterCommand(Commands.SelectTap, "TAP", () => NoteView.NewNoteType = NoteType.Tap);
-            commandSource.RegisterCommand(Commands.SelectExTap, "ExTAP", () => NoteView.NewNoteType = NoteType.ExTap);
+            commandSource.RegisterCommand(Commands.SelectExTap, "ExTAP", () => HandleExTapDirection());
             commandSource.RegisterCommand(Commands.SelectHold, "HOLD", () => NoteView.NewNoteType = NoteType.Hold);
             commandSource.RegisterCommand(Commands.SelectSlide, "SLIDE", () =>
             {
@@ -723,6 +723,30 @@ namespace Ched.UI
 
                     case HorizontalAirDirection.Left:
                         return HorizontalAirDirection.Center;
+                }
+                throw new ArgumentException();
+            }
+
+            void HandleExTapDirection()
+            {
+                if (NoteView.NewNoteType != NoteType.ExTap)
+                {
+                    NoteView.NewNoteType = NoteType.ExTap;
+                    return;
+                }
+                NoteView.ExTapDirection = GetNextExTapDirection(NoteView.ExTapDirection);
+            }
+
+            ExTapDirection GetNextExTapDirection(ExTapDirection direction)
+            {
+                switch (direction)
+                {
+                    case ExTapDirection.None:
+                        return ExTapDirection.Down;
+                    case ExTapDirection.Down:
+                        return ExTapDirection.Center;
+                    case ExTapDirection.Center:
+                        return ExTapDirection.None;
                 }
                 throw new ArgumentException();
             }
@@ -1014,7 +1038,22 @@ namespace Ched.UI
             var shortcutItemBuilder = new ToolStripButtonBuilder(ShortcutManager);
 
             var tapButton = shortcutItemBuilder.BuildItem(Commands.SelectTap, "TAP", Resources.TapIcon);
-            var exTapButton = shortcutItemBuilder.BuildItem(Commands.SelectExTap, "ExTAP", Resources.ExTapIcon);
+
+            //var exTapButton = shortcutItemBuilder.BuildItem(Commands.SelectExTap, "ExTAP", Resources.ExTapIcon);
+            var exTapKind = new CheckableToolStripSplitButton()
+            {
+                DisplayStyle = ToolStripItemDisplayStyle.Image
+            };
+            exTapKind.Text = "ExTAP";
+            exTapKind.Click += (s, e) => noteView.NewNoteType = NoteType.ExTap;
+            exTapKind.DropDown.Items.AddRange(new ToolStripItem[]
+            {
+                new ToolStripMenuItem("ExTAP", Resources.ExTapIcon, (s, e) => noteView.ExTapDirection = ExTapDirection.None),
+                new ToolStripMenuItem("ExTAP DOWN", Resources.ExTapDownIcon, (s, e) => noteView.ExTapDirection = ExTapDirection.Down),
+                new ToolStripMenuItem("ExTAP CENTER", Resources.ExTapCenterIcon, (s, e) => noteView.ExTapDirection = ExTapDirection.Center),
+            });
+            exTapKind.Image = Resources.ExTapIcon;
+
             var holdButton = shortcutItemBuilder.BuildItem(Commands.SelectHold, "HOLD", Resources.HoldIcon);
             var slideButton = shortcutItemBuilder.BuildItem(Commands.SelectSlide, "SLIDE", Resources.SlideIcon);
             var slideStepButton = shortcutItemBuilder.BuildItem(Commands.SelectSlideStep, MainFormStrings.SlideStep, Resources.SlideStepIcon);
@@ -1083,7 +1122,7 @@ namespace Ched.UI
             noteView.NewNoteTypeChanged += (s, e) =>
             {
                 tapButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Tap);
-                exTapButton.Checked = noteView.NewNoteType.HasFlag(NoteType.ExTap);
+                exTapKind.Checked = noteView.NewNoteType.HasFlag(NoteType.ExTap);
                 holdButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Hold);
                 slideButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Slide) && !noteView.IsNewSlideStepVisible && !noteView.IsNewSlideStepCurve;
                 slideStepButton.Checked = noteView.NewNoteType.HasFlag(NoteType.Slide) && noteView.IsNewSlideStepVisible && !noteView.IsNewSlideStepCurve;
@@ -1112,9 +1151,27 @@ namespace Ched.UI
                 }
             };
 
+            noteView.ExTapDirectionChanged += (s, e) =>
+            {
+                switch (noteView.ExTapDirection)
+                {
+                    case ExTapDirection.None:
+                        exTapKind.Image = Resources.ExTapIcon;
+                        break;
+
+                    case ExTapDirection.Down:
+                        exTapKind.Image = Resources.ExTapDownIcon;
+                        break;
+
+                    case ExTapDirection.Center:
+                        exTapKind.Image = Resources.ExTapCenterIcon;
+                        break;
+                }
+            };
+
             return new ToolStrip(new ToolStripItem[]
             {
-                tapButton, exTapButton, holdButton, slideButton, slideStepButton, slideCurveButton, airKind, airActionButton, flickButton, damageButton,
+                tapButton, exTapKind, holdButton, slideButton, slideStepButton, slideCurveButton, airKind, airActionButton, flickButton, damageButton,
                 quantizeComboBox
             });
         }

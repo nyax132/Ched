@@ -8,5 +8,14 @@ namespace Ched.Core.Notes
 {
     public class ExTap : Tap
     {
+        [Newtonsoft.Json.JsonProperty]
+        public ExTapDirection direction = ExTapDirection.None;
+    }
+
+    public enum ExTapDirection
+    {
+        None,
+        Down,
+        Center
     }
 }

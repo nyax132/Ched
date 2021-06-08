@@ -203,6 +203,26 @@ namespace Ched.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap ExTapCenterIcon {
+            get {
+                object obj = ResourceManager.GetObject("ExTapCenterIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap ExTapDownIcon {
+            get {
+                object obj = ResourceManager.GetObject("ExTapDownIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap ExTapIcon {
             get {
                 object obj = ResourceManager.GetObject("ExTapIcon", resourceCulture);

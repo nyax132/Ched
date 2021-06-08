@@ -99,7 +99,18 @@ namespace Ched.Components.Exporter
                 writer.WriteLine();
 
                 var shortNotes = notes.Taps.Cast<TappableBase>().Select(p => new { Type = '1', Note = p })
-                    .Concat(notes.ExTaps.Cast<TappableBase>().Select(p => new { Type = '2', Note = p }))
+                    .Concat(notes.ExTaps.Select(p => {
+                        switch(p.direction)
+                        {
+                            case ExTapDirection.None:
+                                return new { Type = '2', Note = (TappableBase)p };
+                            case ExTapDirection.Down:
+                                return new { Type = '5', Note = (TappableBase)p };
+                            case ExTapDirection.Center:
+                                return new { Type = '6', Note = (TappableBase)p };
+                        }
+                        throw new ArgumentException();
+                    }))
                     .Concat(notes.Flicks.Cast<TappableBase>().Select(p => new { Type = '3', Note = p }))
                     .Concat(notes.Damages.Cast<TappableBase>().Select(p => new { Type = '4', Note = p }))
                     .Select(p => (p.Note.Tick, p.Note.LaneIndex, p.Type + ToLaneWidthString(p.Note.Width)));

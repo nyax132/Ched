@@ -24,6 +24,16 @@ namespace Ched.Drawing
             dc.Graphics.DrawTappableNote(rect, dc.ColorProfile.ExTapColor, dc.ColorProfile.BorderColor);
         }
 
+        public static void DrawExTapDown(this DrawingContext dc, RectangleF rect)
+        {
+            dc.Graphics.DrawTappableNote(rect, dc.ColorProfile.ExTapDownColor, dc.ColorProfile.BorderColor);
+        }
+
+        public static void DrawExTapCenter(this DrawingContext dc, RectangleF rect)
+        {
+            dc.Graphics.DrawTappableNote(rect, dc.ColorProfile.ExTapCenterColor, dc.ColorProfile.BorderColor);
+        }
+
         public static void DrawFlick(this DrawingContext dc, RectangleF rect)
         {
             var foregroundRect = new RectangleF(rect.Left + rect.Width / 4, rect.Top, rect.Width / 2, rect.Height);

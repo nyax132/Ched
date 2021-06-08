@@ -63,9 +63,14 @@ namespace Ched.Plugins
                         break;
 
                     case '5':
+                        var downExTap = SetNotePosition(new ExTap(), item.Position);
+                        downExTap.direction = ExTapDirection.Down;
+                        res.Notes.ExTaps.Add(downExTap);
+                        break;
                     case '6':
-                        args.ReportDiagnostic(new Diagnostic(DiagnosticSeverity.Warning, $"やべーExTAPは通常ExTAPとしてインポートされます。(行: {item.LineIndex + 1})"));
-                        res.Notes.ExTaps.Add(SetNotePosition(new ExTap(), item.Position));
+                        var centerExTap = SetNotePosition(new ExTap(), item.Position);
+                        centerExTap.direction = ExTapDirection.Center;
+                        res.Notes.ExTaps.Add(centerExTap);
                         break;
 
                     case '3':

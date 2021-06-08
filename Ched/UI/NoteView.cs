@@ -30,6 +30,7 @@ namespace Ched.UI
         public event EventHandler SelectedRangeChanged;
         public event EventHandler NewNoteTypeChanged;
         public event EventHandler AirDirectionChanged;
+        public event EventHandler ExTapDirectionChanged;
         public event EventHandler DragScroll;
 
         private Color barLineColor = Color.FromArgb(160, 160, 160);
@@ -49,6 +50,7 @@ namespace Ched.UI
         private SelectionRange selectedRange = SelectionRange.Empty;
         private NoteType newNoteType = NoteType.Tap;
         private AirDirection airDirection = new AirDirection(VerticalAirDirection.Up, HorizontalAirDirection.Center);
+        private ExTapDirection exTapDirection = ExTapDirection.None;
         private bool isNewSlideStepVisible = true;
         private bool isNewSlideStepCurve = true;
         private bool playing = false;
@@ -352,6 +354,16 @@ namespace Ched.UI
             }
         }
 
+        public ExTapDirection ExTapDirection
+        {
+            get { return exTapDirection; }
+            set
+            {
+                exTapDirection = value;
+                ExTapDirectionChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
         /// <summary>
         /// AIR-ACTION挿入時に未追加のAIRを追加するかどうか指定します。
         /// </summary>
@@ -396,6 +408,8 @@ namespace Ched.UI
                 BorderColor = new GradientColor(Color.FromArgb(160, 160, 160), Color.FromArgb(208, 208, 208)),
                 TapColor = new GradientColor(Color.FromArgb(138, 0, 0), Color.FromArgb(255, 128, 128)),
                 ExTapColor = new GradientColor(Color.FromArgb(204, 192, 0), Color.FromArgb(255, 236, 68)),
+                ExTapDownColor = new GradientColor(Color.FromArgb(204, 192, 0), Color.FromArgb(52, 127, 233)),
+                ExTapCenterColor = new GradientColor(Color.FromArgb(204, 192, 0), Color.FromArgb(40, 224, 73)),
                 FlickColor = Tuple.Create(new GradientColor(Color.FromArgb(68, 68, 68), Color.FromArgb(186, 186, 186)), new GradientColor(Color.FromArgb(0, 96, 138), Color.FromArgb(122, 216, 252))),
                 DamageColor = new GradientColor(Color.FromArgb(8, 8, 116), Color.FromArgb(22, 40, 180)),
                 HoldColor = new GradientColor(Color.FromArgb(196, 86, 0), Color.FromArgb(244, 156, 102)),
@@ -1115,6 +1129,18 @@ namespace Ched.UI
 
                             case NoteType.ExTap:
                                 var extap = new ExTap();
+                                switch (ExTapDirection)
+                                {
+                                    case ExTapDirection.None:
+                                        extap.direction = ExTapDirection.None;
+                                        break;
+                                    case ExTapDirection.Down:
+                                        extap.direction = ExTapDirection.Down;
+                                        break;
+                                    case ExTapDirection.Center:
+                                        extap.direction = ExTapDirection.Center;
+                                        break;
+                                }
                                 Notes.Add(extap);
                                 newNote = extap;
                                 op = new InsertExTapOperation(Notes, extap);
@@ -1776,7 +1802,18 @@ namespace Ched.UI
 
             foreach (var note in Notes.ExTaps.Where(p => p.Tick >= HeadTick && p.Tick <= tailTick))
             {
-                dc.DrawExTap(GetRectFromNotePosition(note.Tick, note.LaneIndex, note.Width));
+                switch (note.direction)
+                {
+                    case ExTapDirection.None:
+                        dc.DrawExTap(GetRectFromNotePosition(note.Tick, note.LaneIndex, note.Width));
+                        break;
+                    case ExTapDirection.Down:
+                        dc.DrawExTapDown(GetRectFromNotePosition(note.Tick, note.LaneIndex, note.Width));
+                        break;
+                    case ExTapDirection.Center:
+                        dc.DrawExTapCenter(GetRectFromNotePosition(note.Tick, note.LaneIndex, note.Width));
+                        break;
+                }
             }
 
             foreach (var note in Notes.Damages.Where(p => p.Tick >= HeadTick && p.Tick <= tailTick))
