@@ -36,6 +36,7 @@ namespace Ched.UI
 
         private ScrollBar NoteViewScrollBar { get; }
         private NoteView NoteView { get; }
+        private Recorder Recorder { get; }
 
         private SoundPreviewManager PreviewManager { get; }
         private SoundSource CurrentMusicSource;
@@ -85,6 +86,7 @@ namespace Ched.UI
             };
             OperationManager.ChangesCommitted += (s, e) => SetText(ScoreBook.Path);
 
+            Recorder = new Recorder();
             NoteView = new NoteView(OperationManager)
             {
                 Dock = DockStyle.Fill,
@@ -92,11 +94,13 @@ namespace Ched.UI
                 UnitLaneWidth = ApplicationSettings.Default.UnitLaneWidth,
                 InsertAirWithAirAction = ApplicationSettings.Default.InsertAirWithAirAction,
                 IsFollowWhenPlaying = ApplicationSettings.Default.IsFollowWhenPlaying,
+                Recorder = Recorder
             };
 
             PreviewManager = new SoundPreviewManager(this);
             PreviewManager.IsStopAtLastNote = ApplicationSettings.Default.IsPreviewAbortAtLastNote;
             PreviewManager.IsPlayAtHalfSpeed = ApplicationSettings.Default.IsPlayAtHalfSpeed;
+            PreviewManager.TickUpdated += (s, e) => Recorder.Update(e.Tick);
             PreviewManager.TickUpdated += (s, e) => NoteView.CurrentTick = e.Tick;
             PreviewManager.ExceptionThrown += (s, e) => MessageBox.Show(this, ErrorStrings.PreviewException, Program.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -472,6 +476,7 @@ namespace Ched.UI
             if (PreviewManager.Playing)
             {
                 PreviewManager.Stop();
+                Recorder.Stop();
                 return;
             }
 
@@ -491,6 +496,7 @@ namespace Ched.UI
                 CommitChanges();
                 var context = new SoundPreviewContext(ScoreBook.Score, CurrentMusicSource);
                 if (!PreviewManager.Start(context, startCurrentTick)) return;
+                Recorder.Start(startCurrentTick);
                 PreviewManager.Finished += lambda;
                 NoteView.Playing = true;
                 NoteView.Editable = CanEdit;

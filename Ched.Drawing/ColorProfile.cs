@@ -45,5 +45,8 @@ namespace Ched.Drawing
         public Color AirDownColor { get; set; }
         public Color AirHoldLineColor { get; set; }
         public GradientColor AirStepColor { get; set; }
+
+        public Color RecorderGroundColor { get; set; }
+        public Color RecorderAirColor { get; set; }
     }
 }

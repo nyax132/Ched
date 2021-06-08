@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -391,6 +391,8 @@ namespace Ched.UI
 
         private Dictionary<Score, NoteCollection> NoteCollectionCache { get; } = new Dictionary<Score, NoteCollection>();
 
+        public Recorder Recorder = null;
+
         public NoteView(OperationManager manager)
         {
             InitializeComponent();
@@ -423,7 +425,9 @@ namespace Ched.UI
                 AirDownColor = Color.FromArgb(192, 21, 216),
                 AirActionColor = new GradientColor(Color.FromArgb(146, 0, 192), Color.FromArgb(212, 92, 255)),
                 AirHoldLineColor = Color.FromArgb(216, 0, 196, 0),
-                AirStepColor = new GradientColor(Color.FromArgb(6, 180, 10), Color.FromArgb(80, 224, 64))
+                AirStepColor = new GradientColor(Color.FromArgb(6, 180, 10), Color.FromArgb(80, 224, 64)),
+                RecorderGroundColor = Color.FromArgb(128, 156, 8, 8),
+                RecorderAirColor = Color.FromArgb(200, 55, 237, 234)
             };
 
             InitializeHandlers();
@@ -1673,6 +1677,35 @@ namespace Ched.UI
                         float y = GetYPositionFromTick(pos + i * barTick / sigs[j].Denominator);
                         pe.Graphics.DrawLine(i % sigs[j].Numerator == 0 ? barPen : beatPen, 0, y, laneWidth, y);
                     }
+                }
+            }
+
+            // Draw recorder output here
+            var recorderData = Recorder.GetRecordedData(HeadTick, TailTick);
+            for(int i = 0; i < Recorder.N_GROUND; i++)
+            {
+                var laneIndex = i / 2;
+                foreach (var interval in recorderData[i])
+                {
+                    dc.DrawRecorderGroundBackground(new RectangleF(
+                        (UnitLaneWidth + BorderThickness) * laneIndex + BorderThickness,
+                        GetYPositionFromTick(interval.StartTick),
+                        (UnitLaneWidth + BorderThickness) * 1 - BorderThickness,
+                        GetYPositionFromTick(interval.Duration)
+                        ));
+                }
+            }
+
+            for (int i = 0; i < Recorder.N_AIR; i++)
+            {
+                foreach (var interval in recorderData[i + Recorder.N_GROUND])
+                {
+                    dc.DrawRecorderAirBackground(new RectangleF(
+                        (UnitLaneWidth + BorderThickness) * 16 + BorderThickness + UnitLaneWidth * i / 2,
+                        GetYPositionFromTick(interval.StartTick),
+                        (UnitLaneWidth + BorderThickness) / 2,
+                        GetYPositionFromTick(interval.Duration)
+                        ));
                 }
             }
 

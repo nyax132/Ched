@@ -202,6 +202,7 @@
     <Compile Include="Plugins\SusImportPlugin.cs" />
     <Compile Include="Plugins\SusParser.cs" />
     <Compile Include="Plugins\SusScoreData.cs" />
+    <Compile Include="UI\Recorder.cs" />
     <Compile Include="UI\ShellExtensions.cs" />
     <Compile Include="UI\Helpers.cs" />
     <Compile Include="UI\Shortcuts\Commands.cs" />

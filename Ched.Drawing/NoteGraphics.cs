@@ -314,6 +314,26 @@ namespace Ched.Drawing
         {
             dc.Graphics.DrawBorder(rect, dc.ColorProfile.BorderColor);
         }
+
+        public static void DrawRecorderGroundBackground(this DrawingContext dc, RectangleF rect)
+        {
+            Color color = dc.ColorProfile.RecorderGroundColor;
+
+            using (var brush = new SolidBrush(color))
+            {
+                dc.Graphics.FillRectangle(brush, rect);
+            }
+        }
+
+        public static void DrawRecorderAirBackground(this DrawingContext dc, RectangleF rect)
+        {
+            Color color = dc.ColorProfile.RecorderAirColor;
+
+            using (var brush = new SolidBrush(color))
+            {
+                dc.Graphics.FillRectangle(brush, rect);
+            }
+        }
     }
 
     public class SlideStepElement
