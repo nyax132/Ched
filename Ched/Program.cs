@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 
 using Ched.Configuration;
@@ -25,6 +26,7 @@ namespace Ched
 #if !DEBUG
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
             AppDomain.CurrentDomain.UnhandledException += (s, e) => DumpException((Exception)e.ExceptionObject, true);
+            // Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("zh-CN");
 #endif
 
             AppDomain.CurrentDomain.AssemblyResolve += (s, e) =>

@@ -141,10 +141,20 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ErrorStrings.resx</DependentUpon>
     </Compile>
+    <Compile Include="Localization\ErrorStrings.zh.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ErrorStrings.zh.resx</DependentUpon>
+    </Compile>
     <Compile Include="Localization\FileFilterStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>FileFilterStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Localization\FileFilterStrings.zh.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FileFilterStrings.zh.resx</DependentUpon>
     </Compile>
     <Compile Include="Localization\MainFormStrings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -156,6 +166,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MainFormStrings.en.resx</DependentUpon>
     </Compile>
+    <Compile Include="Localization\MainFormStrings.zh.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MainFormStrings.zh.resx</DependentUpon>
+    </Compile>
     <Compile Include="Localization\PluginStrings.en.Designer.cs">
       <DependentUpon>PluginStrings.en.resx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -165,6 +180,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>PluginStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Localization\PluginStrings.zh.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PluginStrings.zh.resx</DependentUpon>
     </Compile>
     <Compile Include="Plugins\ComboCalculator.cs" />
     <Compile Include="Plugins\Diagnostics.cs" />
@@ -285,10 +305,18 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ErrorStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Localization\ErrorStrings.zh.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ErrorStrings.zh.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Localization\FileFilterStrings.en.resx" />
     <EmbeddedResource Include="Localization\FileFilterStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>FileFilterStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Localization\FileFilterStrings.zh.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileFilterStrings.zh.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Localization\MainFormStrings.en.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
@@ -298,6 +326,10 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>MainFormStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Localization\MainFormStrings.zh.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>MainFormStrings.zh.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Localization\PluginStrings.en.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>PluginStrings.en.Designer.cs</LastGenOutput>
@@ -305,6 +337,10 @@
     <EmbeddedResource Include="Localization\PluginStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>PluginStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Localization\PluginStrings.zh.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>PluginStrings.zh.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
@@ -322,16 +358,25 @@
     <EmbeddedResource Include="UI\BpmSelectionForm.resx">
       <DependentUpon>BpmSelectionForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\BpmSelectionForm.zh.resx">
+      <DependentUpon>BpmSelectionForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\CustomQuantizeSelectionForm.en.resx">
       <DependentUpon>CustomQuantizeSelectionForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\CustomQuantizeSelectionForm.resx">
       <DependentUpon>CustomQuantizeSelectionForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\CustomQuantizeSelectionForm.zh.resx">
+      <DependentUpon>CustomQuantizeSelectionForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\HighSpeedSelectionForm.en.resx">
       <DependentUpon>HighSpeedSelectionForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\HighSpeedSelectionForm.resx">
+      <DependentUpon>HighSpeedSelectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\HighSpeedSelectionForm.zh.resx">
       <DependentUpon>HighSpeedSelectionForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\MainForm.resx">
@@ -346,10 +391,16 @@
     <EmbeddedResource Include="UI\TimeSignatureSelectionForm.resx">
       <DependentUpon>TimeSignatureSelectionForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\TimeSignatureSelectionForm.zh.resx">
+      <DependentUpon>TimeSignatureSelectionForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\VersionInfoForm.en.resx">
       <DependentUpon>VersionInfoForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\VersionInfoForm.resx">
+      <DependentUpon>VersionInfoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\VersionInfoForm.zh.resx">
       <DependentUpon>VersionInfoForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
