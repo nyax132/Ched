@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
+using LibUsbDotNet;
+using LibUsbDotNet.Main;
 
 namespace Ched.UI
 {
@@ -32,6 +34,8 @@ namespace Ched.UI
 
         private bool IsRecording = false;
         private Interval RecordingInterval = (0, 0);
+        private bool IsUsbSetup = false;
+        private UsbEndpointReader UsbReader = null;
         private RecordingModeType recordingMode;
         private InputModeType inputMode;
 
@@ -43,7 +47,11 @@ namespace Ched.UI
 
         public InputModeType InputMode {
             get { return inputMode; }
-            set { inputMode = value; }
+            set { 
+                inputMode = value; 
+                IsUsbSetup = false;
+                UsbReader = null;
+            }
         }
         public RecordingModeType RecordingMode
         {
@@ -104,11 +112,26 @@ namespace Ched.UI
         public void Start(int tick)
         {
             if (recordingMode == RecordingModeType.RECORDING_DISABLED) return;
+
             IsRecording = true;
             RecordingInterval = (tick, tick);
             for (var i = 0; i < RecordingLanes.Count(); i++)
             {
                 RecordingLanes[i].Clear();
+            }
+
+            if (InputMode == InputModeType.INPUT_HID_YUANCON)
+            {
+                if (!IsUsbSetup)
+                {
+                    var deviceFinder = new UsbDeviceFinder(0x1973, 0x2001);
+                    var device = UsbDevice.OpenUsbDevice(deviceFinder);
+                    if (device != null)
+                    {
+                        UsbReader = device.OpenEndpointReader(ReadEndpointID.Ep01);
+                        IsUsbSetup = true;
+                    }
+                }
             }
         }
 
@@ -132,6 +155,29 @@ namespace Ched.UI
                 case InputModeType.INPUT_KEYBOARD_TASOLLER:
                     return KEYBOARD_TASOLLER_LAYOUT.Select(p => Keyboard.IsKeyDown(p)).ToList();
                 case InputModeType.INPUT_HID_YUANCON:
+                    if (UsbReader != null)
+                    {
+                        var buf = new byte[34];
+                        int readlen;
+                        var ec = UsbReader.Read(buf, 50, out readlen);
+                        if (ec == ErrorCode.None && readlen == 34)
+                        {
+                            return (
+                                Convert
+                                    .ToString(buf[0], 2)
+                                    .PadLeft(6, '0')
+                                    .AsEnumerable()
+                                    .Reverse()
+                                    .Select(p => p == '1')
+                                    .Concat(buf.Skip(2).Select(p => p > 50))
+                                    .ToList()
+                            );
+                        } else
+                        {
+                            IsUsbSetup = false;
+                            UsbReader = null;
+                        }
+                    }
                     return KEYBOARD_YUANCON_LAYOUT.Select(p => false).ToList();
                 case InputModeType.INPUT_HID_TASOLLER:
                     return KEYBOARD_YUANCON_LAYOUT.Select(p => false).ToList();
