@@ -228,13 +228,6 @@ namespace Ched.UI.Recording
                         .Take(6)
                         .ToList();
 
-                    for (int i = 0; i < 6; i += 2)
-                    {
-                        var temp = airData[i];
-                        airData[i] = airData[i + 1];
-                        airData[i + 1] = temp;
-                    }
-
                     return groundData.Concat(airData).ToList();
                 }
 
