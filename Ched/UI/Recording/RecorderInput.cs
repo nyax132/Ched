@@ -177,7 +177,7 @@ namespace Ched.UI.Recording
                 {
                     var groundData = report.Data
                         .Skip(2)
-                        .Select(p => p > 128)
+                        .Select(p => p > 20)
                         .ToList();
                     var airData = Convert
                         .ToString(report.Data[0], 2)
@@ -185,6 +185,47 @@ namespace Ched.UI.Recording
                         .AsEnumerable()
                         .Reverse()
                         .Select(p => p == '1')
+                        .ToList();
+
+                    for (int i = 0; i < 6; i += 2)
+                    {
+                        var temp = airData[i];
+                        airData[i] = airData[i + 1];
+                        airData[i + 1] = temp;
+                    }
+
+                    return groundData.Concat(airData).ToList();
+                }
+
+                return Enumerable.Repeat(false, 38).ToList();
+            }
+        }
+
+        public class TasollerHidTwo : HidInput
+        {
+            private const int VendorId = 0x1ccf;
+            private const int ProductId = 0x2333;
+
+            protected override HidDevice GetDevice()
+            {
+                return HidDevices.Enumerate(VendorId, ProductId).FirstOrDefault();
+            }
+
+            protected override List<bool> ProcessReport(HidReport report)
+            {
+                if (report.Data.Length == 36)
+                {
+                    var groundData = report.Data
+                        .Skip(4)
+                        .Select(p => p > 20)
+                        .ToList();
+                    var airData = Convert
+                        .ToString(report.Data[3], 2)
+                        .PadLeft(8, '0')
+                        .AsEnumerable()
+                        .Reverse()
+                        .Select(p => p == '1')
+                        .Take(6)
                         .ToList();
 
                     for (int i = 0; i < 6; i += 2)

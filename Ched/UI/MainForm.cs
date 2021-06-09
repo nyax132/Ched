@@ -1032,12 +1032,19 @@ namespace Ched.UI
                 item.Checked = true;
                 Recorder.InputMode = Recorder.InputModeType.INPUT_KEYBOARD_TASOLLER;
             });
-            var tasollerHidIsnoRecorderItem = new ToolStripMenuItem("Tasoller (HID, I SAY NYA-O)", null, (s, e) =>
+            var tasollerHidIsnoRecorderItem = new ToolStripMenuItem("Tasoller (HID I SAY NYA-O)", null, (s, e) =>
             {
                 var item = s as ToolStripMenuItem;
                 RecorderInputChanged?.Invoke(this, EventArgs.Empty);
                 item.Checked = true;
                 Recorder.InputMode = Recorder.InputModeType.INPUT_HID_TASOLLER_ISNO;
+            });
+            var tasollerHidTwoRecorderItem = new ToolStripMenuItem("Tasoller (HID 2.0)", null, (s, e) =>
+            {
+                var item = s as ToolStripMenuItem;
+                RecorderInputChanged?.Invoke(this, EventArgs.Empty);
+                item.Checked = true;
+                Recorder.InputMode = Recorder.InputModeType.INPUT_HID_TASOLLER_TWO;
             });
             var openithmKeyboardRecorderItem = new ToolStripMenuItem("OpeNITHM (Keyboard)", null, (s, e) =>
             {
@@ -1051,7 +1058,8 @@ namespace Ched.UI
                 yuanconKeyboardRecorderItem, 
                 yuanconHidRecorderItem,
                 tasollerKeyboardRecorderItem,
-                tasollerHidIsnoRecorderItem, 
+                tasollerHidIsnoRecorderItem,
+                tasollerHidTwoRecorderItem,
                 openithmKeyboardRecorderItem
             };
 
@@ -1067,7 +1075,7 @@ namespace Ched.UI
             {
                 hideRecorderItem, showRecorderItem, overwriteRecorderItem, addRecorderItem, new ToolStripSeparator(),
                 clearRecorderItem, new ToolStripSeparator(),
-                new ToolStripMenuItem("Recording Input Device", null, selectRecorderInputOptions)
+                new ToolStripMenuItem(MainFormStrings.RecordInput, null, selectRecorderInputOptions)
             };
 
             PreviewManager.Started += (s, e) =>

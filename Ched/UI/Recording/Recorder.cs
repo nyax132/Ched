@@ -45,6 +45,9 @@ namespace Ched.UI.Recording
                         case InputModeType.INPUT_HID_TASOLLER_ISNO:
                             recorderInput = new RecorderInput.TasollerHidIsno();
                             break;
+                        case InputModeType.INPUT_HID_TASOLLER_TWO:
+                            recorderInput = new RecorderInput.TasollerHidTwo();
+                            break;
                         case InputModeType.INPUT_KEYBOARD_OPENITHM:
                             recorderInput = new RecorderInput.OpenithmKeyboard();
                             break;
@@ -192,6 +195,7 @@ namespace Ched.UI.Recording
             INPUT_HID_YUANCON,
             INPUT_KEYBOARD_TASOLLER,
             INPUT_HID_TASOLLER_ISNO,
+            INPUT_HID_TASOLLER_TWO,
             INPUT_KEYBOARD_OPENITHM,
         }
 
