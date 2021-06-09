@@ -1014,6 +1014,13 @@ namespace Ched.UI
                 Recorder.InputMode = Recorder.InputModeType.INPUT_KEYBOARD_YUANCON;
             })
             { Checked = true };
+            var yuanconHidRecorderItem = new ToolStripMenuItem("Yuancon (HID)", null, (s, e) =>
+            {
+                var item = s as ToolStripMenuItem;
+                RecorderInputChanged?.Invoke(this, EventArgs.Empty);
+                item.Checked = true;
+                Recorder.InputMode = Recorder.InputModeType.INPUT_HID_YUANCON;
+            });
             var tasollerKeyboardRecorderItem = new ToolStripMenuItem("Tasoller (Keyboard)", null, (s, e) =>
             {
                 var item = s as ToolStripMenuItem;
@@ -1021,34 +1028,51 @@ namespace Ched.UI
                 item.Checked = true;
                 Recorder.InputMode = Recorder.InputModeType.INPUT_KEYBOARD_TASOLLER;
             });
-            var yuanconHIDRecorderItem = new ToolStripMenuItem("Yuancon (HID)", null, (s, e) =>
+            var tasollerHidIsnoRecorderItem = new ToolStripMenuItem("Tasoller (HID ISNO)", null, (s, e) =>
             {
                 var item = s as ToolStripMenuItem;
                 RecorderInputChanged?.Invoke(this, EventArgs.Empty);
                 item.Checked = true;
-                Recorder.InputMode = Recorder.InputModeType.INPUT_HID_YUANCON;
-            });
-            var tasollerHIDRecorderItem = new ToolStripMenuItem("Tasoller (HID)", null, (s, e) =>
-            {
-                var item = s as ToolStripMenuItem;
-                RecorderInputChanged?.Invoke(this, EventArgs.Empty);
-                item.Checked = true;
-                Recorder.InputMode = Recorder.InputModeType.INPUT_HID_TASOLLER;
+                Recorder.InputMode = Recorder.InputModeType.INPUT_HID_TASOLLER_ISNO;
             });
 
             RecorderInputChanged += (s, e) =>
             {
                 yuanconKeyboardRecorderItem.Checked = false;
+                yuanconHidRecorderItem.Checked = false;
                 tasollerKeyboardRecorderItem.Checked = false;
-                yuanconHIDRecorderItem.Checked = false;
-                tasollerHIDRecorderItem.Checked = false;
+                tasollerHidIsnoRecorderItem.Checked = false;
             };
 
             var recorderMenuItems = new ToolStripItem[]
             {
                 hideRecorderItem, showRecorderItem, overwriteRecorderItem, addRecorderItem, new ToolStripSeparator(),
                 clearRecorderItem, new ToolStripSeparator(),
-                yuanconKeyboardRecorderItem, tasollerKeyboardRecorderItem, yuanconHIDRecorderItem, tasollerHIDRecorderItem
+                yuanconKeyboardRecorderItem, tasollerKeyboardRecorderItem, yuanconHidRecorderItem, tasollerHidIsnoRecorderItem
+            };
+
+
+            PreviewManager.Started += (s, e) =>
+            {
+                hideRecorderItem.Enabled = false;
+                showRecorderItem.Enabled = false;
+                overwriteRecorderItem.Enabled = false;
+                addRecorderItem.Enabled = false;
+                yuanconKeyboardRecorderItem.Enabled = false;
+                tasollerKeyboardRecorderItem.Enabled = false;
+                yuanconHidRecorderItem.Enabled = false;
+                tasollerHidIsnoRecorderItem.Enabled = false;
+            };
+            PreviewManager.Finished += (s, e) =>
+            {
+                hideRecorderItem.Enabled = true;
+                showRecorderItem.Enabled = true;
+                overwriteRecorderItem.Enabled = true;
+                addRecorderItem.Enabled = true;
+                yuanconKeyboardRecorderItem.Enabled = true;
+                tasollerKeyboardRecorderItem.Enabled = true;
+                yuanconHidRecorderItem.Enabled = true;
+                tasollerHidIsnoRecorderItem.Enabled = true;
             };
 
             var helpMenuItems = new ToolStripItem[]

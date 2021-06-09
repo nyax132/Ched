@@ -304,7 +304,7 @@
     </Compile>
     <Compile Include="UI\Windows\ViewModel.cs" />
     <Compile Include="UI\Windows\WpfExtensions.cs" />
-    <Compile Include="UI\YuanconHid.cs" />
+    <Compile Include="UI\RecorderInput.cs" />
     <EmbeddedResource Include="Localization\ErrorStrings.en.resx" />
     <EmbeddedResource Include="Localization\ErrorStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
