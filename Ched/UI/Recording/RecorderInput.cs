@@ -1,61 +1,89 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HidLibrary;
 using System.Windows.Input;
+using System.Windows.Forms;
+using HidLibrary;
 
-namespace Ched.UI
+namespace Ched.UI.Recording
 {
     class RecorderInput {
 
         public interface IRecorderInput
         {
             void Start();
-            void End();
+            void Stop();
             List<bool> Read();
+            bool ShouldInterceptKey(Keys keys);
         }
 
         public class KeyboardInput: IRecorderInput
         {
             public void Start() { }
-            public void End() { }
+            public void Stop() { }
             public virtual List<bool> Read()
             {
                 return Enumerable.Repeat(false, 38).ToList();
             }
+            public virtual bool ShouldInterceptKey(Keys keys) { return false; }
         }
 
         public class YuanconKeyboard: KeyboardInput
         {
-            private static Key[] KEYBOARD_YUANCON_LAYOUT = {
+            private static Key[] Layout = {
                 Key.D6, Key.D5, Key.D4, Key.D3, Key.D2, Key.D1, Key.Z, Key.Y,
                 Key.X, Key.W, Key.V, Key.U, Key.T, Key.S, Key.R, Key.Q,
                 Key.P, Key.O, Key.N, Key.M, Key.L, Key.K, Key.J, Key.I,
                 Key.H, Key.G, Key.F, Key.E, Key.D, Key.C, Key.B, Key.A,
-                Key.OemMinus, Key.OemPlus, Key.Oem4,
-                Key.Oem6, Key.Oem5, Key.Oem1
+                Key.OemMinus, Key.OemPlus, Key.OemOpenBrackets,
+                Key.OemCloseBrackets, Key.OemPipe, Key.OemSemicolon
             };
             public override List<bool> Read()
             {
-                return KEYBOARD_YUANCON_LAYOUT.Select(p => Keyboard.IsKeyDown(p)).ToList();
+                return Layout.Select(p => Keyboard.IsKeyDown(p)).ToList();
+            }
+            public override bool ShouldInterceptKey(Keys keys) {
+                return Layout.Contains(KeyInterop.KeyFromVirtualKey((int)keys));
             }
         }
 
         public class TasollerKeyboard: KeyboardInput
         {
-            private static Key[] KEYBOARD_TASOLLER_LAYOUT = {
+            private static Key[] Layout = {
                 Key.A, Key.D1, Key.Z, Key.Q, Key.S, Key.D2, Key.X, Key.W,
                 Key.D, Key.D3, Key.C, Key.E, Key.F, Key.D4, Key.V, Key.R,
                 Key.G, Key.D5, Key.B, Key.T, Key.H, Key.D6, Key.N, Key.Y,
                 Key.J, Key.D7, Key.M, Key.U, Key.K, Key.D8, Key.OemComma, Key.I,
-                Key.Oem2, Key.Oem7, Key.OemPeriod,
-                Key.Oem1, Key.Oem6, Key.Oem4
+                Key.OemQuestion, Key.OemQuotes, Key.OemPeriod,
+                Key.OemSemicolon, Key.OemCloseBrackets, Key.OemOpenBrackets
             };
             public override List<bool> Read()
             {
-                return KEYBOARD_TASOLLER_LAYOUT.Select(p => Keyboard.IsKeyDown(p)).ToList();
+                return Layout.Select(p => Keyboard.IsKeyDown(p)).ToList();
+            }
+            public override bool ShouldInterceptKey(Keys keys)
+            {
+                return Layout.Contains(KeyInterop.KeyFromVirtualKey((int)keys));
+            }
+        }
+
+        public class OpenithmKeyboard : KeyboardInput
+        {
+            private static Key[] Layout = {
+                Key.A, Key.D1, Key.Z, Key.Q, Key.S, Key.D2, Key.X, Key.W,
+                Key.D, Key.D3, Key.C, Key.E, Key.F, Key.D4, Key.V, Key.R,
+                Key.G, Key.D5, Key.B, Key.T, Key.H, Key.D6, Key.N, Key.Y,
+                Key.J, Key.D7, Key.M, Key.U, Key.K, Key.D8, Key.OemComma, Key.I,
+                Key.OemQuestion, Key.OemPeriod, Key.OemQuotes,
+                Key.OemSemicolon, Key.OemCloseBrackets, Key.OemOpenBrackets
+            };
+            public override List<bool> Read()
+            {
+                return Layout.Select(p => Keyboard.IsKeyDown(p)).ToList();
+            }
+            public override bool ShouldInterceptKey(Keys keys)
+            {
+                return Layout.Contains(KeyInterop.KeyFromVirtualKey((int)keys));
             }
         }
 
@@ -112,7 +140,7 @@ namespace Ched.UI
                 device.ReadReport(Update);
             }
 
-            public void End()
+            public void Stop()
             {
                 active = false;
                 if (device != null)
@@ -129,6 +157,8 @@ namespace Ched.UI
                     return state.Select(x => x).ToList();
                 }
             }
+
+            public bool ShouldInterceptKey(Keys keys) { return false; }
         }
 
         public class YuanconHid: HidInput

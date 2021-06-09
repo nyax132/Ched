@@ -18,6 +18,7 @@ using Ched.Properties;
 using Ched.UI.Shortcuts;
 using Ched.UI.Operations;
 using Ched.UI.Windows;
+using Ched.UI.Recording;
 
 namespace Ched.UI
 {
@@ -231,6 +232,7 @@ namespace Ched.UI
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            if (Recorder.ShouldInterruptKey(keyData)) return true;
             if (ShortcutManager.ExecuteCommand(keyData)) return true;
             return base.ProcessCmdKey(ref msg, keyData);
         }
@@ -281,6 +283,7 @@ namespace Ched.UI
                 SoundSettings.Default.ScoreSound.TryGetValue(book.Path, out SoundSource src);
                 if (src != null) CurrentMusicSource = src;
             }
+            Recorder.Clear();
         }
 
         protected void LoadEmptyBook()
@@ -290,6 +293,7 @@ namespace Ched.UI
             events.BpmChangeEvents.Add(new BpmChangeEvent() { Tick = 0, Bpm = 120 });
             events.TimeSignatureChangeEvents.Add(new TimeSignatureChangeEvent() { Tick = 0, Numerator = 4, DenominatorExponent = 2 });
             LoadBook(book);
+            Recorder.Clear();
         }
 
         protected void OpenFile()
@@ -955,7 +959,7 @@ namespace Ched.UI
                 isAbortAtLastNoteItem, isFollowWhenPlayingItem, isPlayAtHalfSpeedItem
             };
 
-            var hideRecorderItem = new ToolStripMenuItem("Hide recorded input", null, (s, e) =>
+            var hideRecorderItem = new ToolStripMenuItem("Hide Recorder", null, (s, e) =>
             {
                 var item = s as ToolStripMenuItem;
                 RecorderModeChanged?.Invoke(this, EventArgs.Empty);
@@ -966,7 +970,7 @@ namespace Ched.UI
             { Checked = true };
             NoteView.IsShowRecorder = false;
             Recorder.RecordingMode = Recorder.RecordingModeType.RECORDING_DISABLED;
-            var showRecorderItem = new ToolStripMenuItem("Show recorded input", null, (s, e) =>
+            var showRecorderItem = new ToolStripMenuItem("Show Recorder", null, (s, e) =>
             {
                 var item = s as ToolStripMenuItem;
                 RecorderModeChanged?.Invoke(this, EventArgs.Empty);
@@ -974,7 +978,7 @@ namespace Ched.UI
                 NoteView.IsShowRecorder = true;
                 Recorder.RecordingMode = Recorder.RecordingModeType.RECORDING_DISABLED;
             });
-            var overwriteRecorderItem = new ToolStripMenuItem("Record when playing (Overwrite)", null, (s, e) =>
+            var overwriteRecorderItem = new ToolStripMenuItem("Record (Overwrite)", null, (s, e) =>
             {
                 var item = s as ToolStripMenuItem;
                 RecorderModeChanged?.Invoke(this, EventArgs.Empty);
@@ -982,7 +986,7 @@ namespace Ched.UI
                 NoteView.IsShowRecorder = true;
                 Recorder.RecordingMode = Recorder.RecordingModeType.RECORDING_OVERWRITE;
             });
-            var addRecorderItem = new ToolStripMenuItem("Record when playing (Add)", null, (s, e) =>
+            var addRecorderItem = new ToolStripMenuItem("Record (Add)", null, (s, e) =>
             {
                 var item = s as ToolStripMenuItem;
                 RecorderModeChanged?.Invoke(this, EventArgs.Empty);
@@ -1035,22 +1039,36 @@ namespace Ched.UI
                 item.Checked = true;
                 Recorder.InputMode = Recorder.InputModeType.INPUT_HID_TASOLLER_ISNO;
             });
+            var openithmKeyboardRecorderItem = new ToolStripMenuItem("OpeNITHM (Keyboard)", null, (s, e) =>
+            {
+                var item = s as ToolStripMenuItem;
+                RecorderInputChanged?.Invoke(this, EventArgs.Empty);
+                item.Checked = true;
+                Recorder.InputMode = Recorder.InputModeType.INPUT_KEYBOARD_OPENITHM;
+            });
+
+            var selectRecorderInputOptions = new ToolStripMenuItem[] {
+                yuanconKeyboardRecorderItem,
+                tasollerKeyboardRecorderItem, 
+                yuanconHidRecorderItem, 
+                tasollerHidIsnoRecorderItem, 
+                openithmKeyboardRecorderItem
+            };
 
             RecorderInputChanged += (s, e) =>
             {
-                yuanconKeyboardRecorderItem.Checked = false;
-                yuanconHidRecorderItem.Checked = false;
-                tasollerKeyboardRecorderItem.Checked = false;
-                tasollerHidIsnoRecorderItem.Checked = false;
+                foreach(var menuItem in selectRecorderInputOptions)
+                {
+                    menuItem.Checked = false;
+                }
             };
 
             var recorderMenuItems = new ToolStripItem[]
             {
                 hideRecorderItem, showRecorderItem, overwriteRecorderItem, addRecorderItem, new ToolStripSeparator(),
                 clearRecorderItem, new ToolStripSeparator(),
-                yuanconKeyboardRecorderItem, tasollerKeyboardRecorderItem, yuanconHidRecorderItem, tasollerHidIsnoRecorderItem
+                new ToolStripMenuItem("Recording Input Device", null, selectRecorderInputOptions)
             };
-
 
             PreviewManager.Started += (s, e) =>
             {

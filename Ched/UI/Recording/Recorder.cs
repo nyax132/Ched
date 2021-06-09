@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 
-namespace Ched.UI
+namespace Ched.UI.Recording
 {
     public class Recorder
     {
@@ -29,7 +30,7 @@ namespace Ched.UI
             set { 
                 if (inputMode != value)
                 {
-                    recorderInput?.End();
+                    recorderInput?.Stop();
                     switch (value)
                     {
                         case InputModeType.INPUT_KEYBOARD_YUANCON:
@@ -43,6 +44,9 @@ namespace Ched.UI
                             break;
                         case InputModeType.INPUT_HID_TASOLLER_ISNO:
                             recorderInput = new RecorderInput.TasollerHidIsno();
+                            break;
+                        case InputModeType.INPUT_KEYBOARD_OPENITHM:
+                            recorderInput = new RecorderInput.OpenithmKeyboard();
                             break;
                     }
                 }
@@ -137,7 +141,7 @@ namespace Ched.UI
             if (!IsRecording) return;
             IsRecording = false;
 
-            recorderInput.End();
+            recorderInput.Stop();
 
             for (var i = 0; i < RecordingLanes.Count(); i++)
             {
@@ -170,6 +174,11 @@ namespace Ched.UI
             }
         }
 
+        public bool ShouldInterruptKey(Keys keys)
+        {
+            return IsRecording && recorderInput.ShouldInterceptKey(keys);
+        }
+
         public enum RecordingModeType
         {
             RECORDING_DISABLED,
@@ -180,9 +189,10 @@ namespace Ched.UI
         public enum InputModeType
         {
             INPUT_KEYBOARD_YUANCON,
-            INPUT_KEYBOARD_TASOLLER,
             INPUT_HID_YUANCON,
-            INPUT_HID_TASOLLER_ISNO
+            INPUT_KEYBOARD_TASOLLER,
+            INPUT_HID_TASOLLER_ISNO,
+            INPUT_KEYBOARD_OPENITHM,
         }
 
         private class PlaybackLane

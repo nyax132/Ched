@@ -18,6 +18,7 @@ using Ched.Core.Notes;
 using Ched.Core.Events;
 using Ched.Drawing;
 using Ched.UI.Operations;
+using Ched.UI.Recording;
 
 namespace Ched.UI
 {

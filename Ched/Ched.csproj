@@ -205,7 +205,7 @@
     <Compile Include="Plugins\SusImportPlugin.cs" />
     <Compile Include="Plugins\SusParser.cs" />
     <Compile Include="Plugins\SusScoreData.cs" />
-    <Compile Include="UI\Recorder.cs" />
+    <Compile Include="UI\Recording\Recorder.cs" />
     <Compile Include="UI\ShellExtensions.cs" />
     <Compile Include="UI\Helpers.cs" />
     <Compile Include="UI\Shortcuts\Commands.cs" />
@@ -304,7 +304,7 @@
     </Compile>
     <Compile Include="UI\Windows\ViewModel.cs" />
     <Compile Include="UI\Windows\WpfExtensions.cs" />
-    <Compile Include="UI\RecorderInput.cs" />
+    <Compile Include="UI\Recording\RecorderInput.cs" />
     <EmbeddedResource Include="Localization\ErrorStrings.en.resx" />
     <EmbeddedResource Include="Localization\ErrorStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
