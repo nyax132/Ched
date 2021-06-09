@@ -342,4 +342,25 @@
   <data name="PlayAtHalfSpeed" xml:space="preserve">
     <value>Play at Half Speed</value>
   </data>
+  <data name="RecordAdd" xml:space="preserve">
+    <value>Record (Add)</value>
+  </data>
+  <data name="RecordClear" xml:space="preserve">
+    <value>Clear Data</value>
+  </data>
+  <data name="RecordHide" xml:space="preserve">
+    <value>Hide Recorder</value>
+  </data>
+  <data name="RecordInput" xml:space="preserve">
+    <value>Input Device</value>
+  </data>
+  <data name="RecordMenu" xml:space="preserve">
+    <value>Recorder (&amp;R)</value>
+  </data>
+  <data name="RecordOverwrite" xml:space="preserve">
+    <value>Record (Overwrite)</value>
+  </data>
+  <data name="RecordShow" xml:space="preserve">
+    <value>Show Recorder</value>
+  </data>
 </root>

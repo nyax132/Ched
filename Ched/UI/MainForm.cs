@@ -959,7 +959,7 @@ namespace Ched.UI
                 isAbortAtLastNoteItem, isFollowWhenPlayingItem, isPlayAtHalfSpeedItem
             };
 
-            var hideRecorderItem = new ToolStripMenuItem("Hide Recorder", null, (s, e) =>
+            var hideRecorderItem = new ToolStripMenuItem(MainFormStrings.RecordHide, null, (s, e) =>
             {
                 var item = s as ToolStripMenuItem;
                 RecorderModeChanged?.Invoke(this, EventArgs.Empty);
@@ -970,7 +970,7 @@ namespace Ched.UI
             { Checked = true };
             NoteView.IsShowRecorder = false;
             Recorder.RecordingMode = Recorder.RecordingModeType.RECORDING_DISABLED;
-            var showRecorderItem = new ToolStripMenuItem("Show Recorder", null, (s, e) =>
+            var showRecorderItem = new ToolStripMenuItem(MainFormStrings.RecordShow, null, (s, e) =>
             {
                 var item = s as ToolStripMenuItem;
                 RecorderModeChanged?.Invoke(this, EventArgs.Empty);
@@ -978,7 +978,7 @@ namespace Ched.UI
                 NoteView.IsShowRecorder = true;
                 Recorder.RecordingMode = Recorder.RecordingModeType.RECORDING_DISABLED;
             });
-            var overwriteRecorderItem = new ToolStripMenuItem("Record (Overwrite)", null, (s, e) =>
+            var overwriteRecorderItem = new ToolStripMenuItem(MainFormStrings.RecordOverwrite, null, (s, e) =>
             {
                 var item = s as ToolStripMenuItem;
                 RecorderModeChanged?.Invoke(this, EventArgs.Empty);
@@ -986,7 +986,7 @@ namespace Ched.UI
                 NoteView.IsShowRecorder = true;
                 Recorder.RecordingMode = Recorder.RecordingModeType.RECORDING_OVERWRITE;
             });
-            var addRecorderItem = new ToolStripMenuItem("Record (Add)", null, (s, e) =>
+            var addRecorderItem = new ToolStripMenuItem(MainFormStrings.RecordAdd, null, (s, e) =>
             {
                 var item = s as ToolStripMenuItem;
                 RecorderModeChanged?.Invoke(this, EventArgs.Empty);
@@ -1003,7 +1003,7 @@ namespace Ched.UI
                 addRecorderItem.Checked = false;
             };
 
-            var clearRecorderItem = new ToolStripMenuItem("Clear Recorder", null, (s, e) =>
+            var clearRecorderItem = new ToolStripMenuItem(MainFormStrings.RecordClear, null, (s, e) =>
             {
                 var item = s as ToolStripMenuItem;
                 Recorder.Clear();
@@ -1032,7 +1032,7 @@ namespace Ched.UI
                 item.Checked = true;
                 Recorder.InputMode = Recorder.InputModeType.INPUT_KEYBOARD_TASOLLER;
             });
-            var tasollerHidIsnoRecorderItem = new ToolStripMenuItem("Tasoller (HID ISNO)", null, (s, e) =>
+            var tasollerHidIsnoRecorderItem = new ToolStripMenuItem("Tasoller (HID, I SAY NYA-O)", null, (s, e) =>
             {
                 var item = s as ToolStripMenuItem;
                 RecorderInputChanged?.Invoke(this, EventArgs.Empty);
@@ -1048,9 +1048,9 @@ namespace Ched.UI
             });
 
             var selectRecorderInputOptions = new ToolStripMenuItem[] {
-                yuanconKeyboardRecorderItem,
-                tasollerKeyboardRecorderItem, 
-                yuanconHidRecorderItem, 
+                yuanconKeyboardRecorderItem, 
+                yuanconHidRecorderItem,
+                tasollerKeyboardRecorderItem,
                 tasollerHidIsnoRecorderItem, 
                 openithmKeyboardRecorderItem
             };
@@ -1118,7 +1118,7 @@ namespace Ched.UI
                 new ToolStripMenuItem(MainFormStrings.InsertMenu, null, insertMenuItems),
                 // PreviewManager初期化後じゃないといけないのダメ設計でしょ
                 new ToolStripMenuItem(MainFormStrings.PlayMenu, null, playMenuItems) { Enabled = PreviewManager.IsSupported },
-                new ToolStripMenuItem("Recorder", null, recorderMenuItems),
+                new ToolStripMenuItem(MainFormStrings.RecordMenu, null, recorderMenuItems),
                 new ToolStripMenuItem(MainFormStrings.HelpMenu, null, helpMenuItems)
             });
             return menu;

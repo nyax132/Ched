@@ -529,6 +529,69 @@ namespace Ched.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 記録(追加).
+        /// </summary>
+        public static string RecordAdd {
+            get {
+                return ResourceManager.GetString("RecordAdd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 消す.
+        /// </summary>
+        public static string RecordClear {
+            get {
+                return ResourceManager.GetString("RecordClear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 非表示.
+        /// </summary>
+        public static string RecordHide {
+            get {
+                return ResourceManager.GetString("RecordHide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 入力装置.
+        /// </summary>
+        public static string RecordInput {
+            get {
+                return ResourceManager.GetString("RecordInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 記録(&amp;R).
+        /// </summary>
+        public static string RecordMenu {
+            get {
+                return ResourceManager.GetString("RecordMenu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 記録(上書き).
+        /// </summary>
+        public static string RecordOverwrite {
+            get {
+                return ResourceManager.GetString("RecordOverwrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 表示.
+        /// </summary>
+        public static string RecordShow {
+            get {
+                return ResourceManager.GetString("RecordShow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to やり直す.
         /// </summary>
         public static string Redo {

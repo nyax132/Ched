@@ -342,4 +342,25 @@
   <data name="SlideCurve" xml:space="preserve">
     <value>SLIDE(湾点)</value>
   </data>
+  <data name="RecordAdd" xml:space="preserve">
+    <value>记录(添加)</value>
+  </data>
+  <data name="RecordClear" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="RecordHide" xml:space="preserve">
+    <value>隐藏</value>
+  </data>
+  <data name="RecordInput" xml:space="preserve">
+    <value>输入设备</value>
+  </data>
+  <data name="RecordMenu" xml:space="preserve">
+    <value>记录(&amp;R)</value>
+  </data>
+  <data name="RecordOverwrite" xml:space="preserve">
+    <value>记录(覆盖)</value>
+  </data>
+  <data name="RecordShow" xml:space="preserve">
+    <value>显示</value>
+  </data>
 </root>
