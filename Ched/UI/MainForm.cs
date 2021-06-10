@@ -1010,58 +1010,27 @@ namespace Ched.UI
                 NoteView.Invalidate();
             });
 
-            var yuanconKeyboardRecorderItem = new ToolStripMenuItem("Yuancon (Keyboard)", null, (s, e) =>
+            var selectRecorderInputOptions = (new List<(Recorder.InputModeType, string)>
             {
-                var item = s as ToolStripMenuItem;
-                RecorderInputChanged?.Invoke(this, EventArgs.Empty);
-                item.Checked = true;
-                Recorder.InputMode = Recorder.InputModeType.INPUT_KEYBOARD_YUANCON;
-            })
-            { Checked = true };
-            var yuanconHidRecorderItem = new ToolStripMenuItem("Yuancon (HID)", null, (s, e) =>
+                (Recorder.InputModeType.INPUT_KEYBOARD_YUANCON, "Yuancon (Keyboard)"),
+                (Recorder.InputModeType.INPUT_HID_YUANCON, "Yuancon (HID)"),
+                (Recorder.InputModeType.INPUT_KEYBOARD_TASOLLER, "Tasoller (Keyboard)"),
+                (Recorder.InputModeType.INPUT_HID_TASOLLER_ISNO, "Tasoller (HID I SAY NYA-O)"),
+                (Recorder.InputModeType.INPUT_HID_TASOLLER_TWO, "Tasoller (HID 2.0)"),
+                (Recorder.InputModeType.INPUT_KEYBOARD_OPENITHM, "OpeNITHM (Keyboard)")
+            }).Select(p =>
             {
-                var item = s as ToolStripMenuItem;
-                RecorderInputChanged?.Invoke(this, EventArgs.Empty);
-                item.Checked = true;
-                Recorder.InputMode = Recorder.InputModeType.INPUT_HID_YUANCON;
-            });
-            var tasollerKeyboardRecorderItem = new ToolStripMenuItem("Tasoller (Keyboard)", null, (s, e) =>
-            {
-                var item = s as ToolStripMenuItem;
-                RecorderInputChanged?.Invoke(this, EventArgs.Empty);
-                item.Checked = true;
-                Recorder.InputMode = Recorder.InputModeType.INPUT_KEYBOARD_TASOLLER;
-            });
-            var tasollerHidIsnoRecorderItem = new ToolStripMenuItem("Tasoller (HID I SAY NYA-O)", null, (s, e) =>
-            {
-                var item = s as ToolStripMenuItem;
-                RecorderInputChanged?.Invoke(this, EventArgs.Empty);
-                item.Checked = true;
-                Recorder.InputMode = Recorder.InputModeType.INPUT_HID_TASOLLER_ISNO;
-            });
-            var tasollerHidTwoRecorderItem = new ToolStripMenuItem("Tasoller (HID 2.0)", null, (s, e) =>
-            {
-                var item = s as ToolStripMenuItem;
-                RecorderInputChanged?.Invoke(this, EventArgs.Empty);
-                item.Checked = true;
-                Recorder.InputMode = Recorder.InputModeType.INPUT_HID_TASOLLER_TWO;
-            });
-            var openithmKeyboardRecorderItem = new ToolStripMenuItem("OpeNITHM (Keyboard)", null, (s, e) =>
-            {
-                var item = s as ToolStripMenuItem;
-                RecorderInputChanged?.Invoke(this, EventArgs.Empty);
-                item.Checked = true;
-                Recorder.InputMode = Recorder.InputModeType.INPUT_KEYBOARD_OPENITHM;
-            });
-
-            var selectRecorderInputOptions = new ToolStripMenuItem[] {
-                yuanconKeyboardRecorderItem, 
-                yuanconHidRecorderItem,
-                tasollerKeyboardRecorderItem,
-                tasollerHidIsnoRecorderItem,
-                tasollerHidTwoRecorderItem,
-                openithmKeyboardRecorderItem
-            };
+                return new ToolStripMenuItem(p.Item2, null, (s, e) =>
+                {
+                    var item = s as ToolStripMenuItem;
+                    RecorderInputChanged?.Invoke(this, EventArgs.Empty);
+                    item.Checked = true;
+                    Recorder.InputMode = p.Item1;
+                    ApplicationSettings.Default.RecorderInputDevice = (int)p.Item1;
+                })
+                { Checked = ApplicationSettings.Default.RecorderInputDevice == (int)p.Item1 };
+            }).ToArray();
+            Recorder.InputMode = (Recorder.InputModeType)ApplicationSettings.Default.RecorderInputDevice;
 
             RecorderInputChanged += (s, e) =>
             {
@@ -1084,10 +1053,10 @@ namespace Ched.UI
                 showRecorderItem.Enabled = false;
                 overwriteRecorderItem.Enabled = false;
                 addRecorderItem.Enabled = false;
-                yuanconKeyboardRecorderItem.Enabled = false;
-                tasollerKeyboardRecorderItem.Enabled = false;
-                yuanconHidRecorderItem.Enabled = false;
-                tasollerHidIsnoRecorderItem.Enabled = false;
+                foreach (var menuItem in selectRecorderInputOptions)
+                {
+                    menuItem.Enabled = false;
+                }
             };
             PreviewManager.Finished += (s, e) =>
             {
@@ -1095,10 +1064,10 @@ namespace Ched.UI
                 showRecorderItem.Enabled = true;
                 overwriteRecorderItem.Enabled = true;
                 addRecorderItem.Enabled = true;
-                yuanconKeyboardRecorderItem.Enabled = true;
-                tasollerKeyboardRecorderItem.Enabled = true;
-                yuanconHidRecorderItem.Enabled = true;
-                tasollerHidIsnoRecorderItem.Enabled = true;
+                foreach (var menuItem in selectRecorderInputOptions)
+                {
+                    menuItem.Enabled = true;
+                }
             };
 
             var helpMenuItems = new ToolStripItem[]

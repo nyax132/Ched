@@ -62,5 +62,13 @@ namespace Ched.Configuration
             get { return ((bool)(this["IsPlayAtHalfSpeed"])); }
             set { this["IsPlayAtHalfSpeed"] = value; }
         }
+
+        [UserScopedSetting]
+        [DefaultSettingValue("0")]
+        public int RecorderInputDevice
+        {
+            get { return ((int)(this["RecorderInputDevice"])); }
+            set { this["RecorderInputDevice"] = value; }
+        }
     }
 }
