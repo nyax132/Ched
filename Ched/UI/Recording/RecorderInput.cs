@@ -107,8 +107,27 @@ namespace Ched.UI.Recording
             {
                 if (device == null)
                 {
+                    Console.WriteLine("All HID Devices");
+                    foreach (var device in HidDevices.Enumerate())
+                    {
+                        Console.WriteLine(device.DevicePath);
+                        Console.WriteLine(device.Description);
+                        Console.WriteLine(device.Capabilities.Usage);
+                        Console.WriteLine(device.Capabilities.UsagePage);
+                        Console.WriteLine(device.Attributes.VendorHexId);
+                        Console.WriteLine(device.Attributes.ProductHexId);
+                    }
+
+                    Console.WriteLine("Getting HID device...");
                     device = GetDevice();
-                    if (device == null) return;
+                    if (device == null)
+                    {
+                        Console.WriteLine("HID device not found");
+                        return;
+                    } else
+                    {
+                        Console.WriteLine("HID device found");
+                    }
                 }
 
                 lock (state)
@@ -126,6 +145,8 @@ namespace Ched.UI.Recording
             private void Update(HidReport report)
             {
                 if (!active || device == null) return;
+
+                // Console.WriteLine(String.Join("/", report.Data.Select(p => p.ToString())));
 
                 var data = ProcessReport(report);
 
