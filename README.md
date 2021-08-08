@@ -1,6 +1,6 @@
 # ChedPlus
 
-[Ched](https://github.com/paralleltree/Ched) with extra features. Respect [@paralleltree](https://twitter.com/paralleltree).
+[Ched](https://github.com/paralleltree/Ched) with extra features. Respect [@paralleltree](https://twitter.com/paralleltree). Download [here](https://github.com/4yn/Ched/releases).
 
 - Disabled double right click toggle between edit and select mode
 - Right click in edit mode behaves like erase
@@ -44,7 +44,15 @@
 
   ![gradient bug](./resources/gradientbug.png)
 
-Look in the releases panel to the right.
+- **Recorder!** Play something on your controller when previewing your chart and it will show up on the playfield. Make charting easier!
+
+  ![recorder](./resources/recorder.gif)
+
+  - Works with Yuancon, Tasoller (I-SAY-NYA-O and 2.0 firmware both work), [iPad/brokenithm-kb](https://github.com/4yn/brokenithm-kb/) (use the Yuancon keyboard option) or just use your keyboard (Tasoller keyboard option recommended)
+
+  ![recorder options](./resources/recorder-options.png)
+
+  - Remember to enable "Recoder (Add/Overwrite)" and select your input device in the options
 
 # Original Readme
 
