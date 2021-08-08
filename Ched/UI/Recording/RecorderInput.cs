@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows.Forms;
-using HidLibrary;
+
+using LibUsbDotNet;
+using LibUsbDotNet.Main;
 
 namespace Ched.UI.Recording
 {
@@ -15,6 +17,14 @@ namespace Ched.UI.Recording
             void Stop();
             List<bool> Read();
             bool ShouldInterceptKey(Keys keys);
+        }
+
+        public static void Cleanup()
+        {
+            // Must call or the program will hang during exiting
+            // https://github.com/LibUsbDotNet/LibUsbDotNet/blob/5dd91a2fda393cf11db2072f2b45c3aee2750388/stage/LibUsbDotNet/UsbDevice.cs#L488
+            // Yuck.
+            UsbDevice.Exit();
         }
 
         public class KeyboardInput: IRecorderInput
@@ -90,44 +100,88 @@ namespace Ched.UI.Recording
         public abstract class HidInput: IRecorderInput
         {
             protected bool active;
-            protected HidDevice device;
+            protected UsbDevice device;
+            protected UsbEndpointReader reader;
             protected List<bool> state;
 
-            protected abstract HidDevice GetDevice();
-            protected abstract List<bool> ProcessReport(HidReport report);
+            protected abstract UsbDevice GetDevice();
+            protected abstract ReadEndpointID GetReadEndpoint();
+            protected abstract List<bool> ProcessReport(byte[] reportData);
 
             public HidInput()
             {
                 active = false;
-                device = null;
+                reader = null;
                 state = Enumerable.Repeat(false, 38).ToList();
             }
 
             public void Start()
             {
-                if (device == null)
-                {
-                    Console.WriteLine("All HID Devices");
-                    foreach (var device in HidDevices.Enumerate())
-                    {
-                        Console.WriteLine(device.DevicePath);
-                        Console.WriteLine(device.Description);
-                        Console.WriteLine(device.Capabilities.Usage);
-                        Console.WriteLine(device.Capabilities.UsagePage);
-                        Console.WriteLine(device.Attributes.VendorHexId);
-                        Console.WriteLine(device.Attributes.ProductHexId);
-                    }
+                UsbDevice.ForceLibUsbWinBack = true;
 
+                if (device == null) {
+
+#if DEBUG
+                    Console.WriteLine("All HID Devices");
+                    foreach (UsbRegistry enumDevice in UsbDevice.AllDevices)
+                    {
+                        Console.WriteLine(enumDevice.DevicePath);
+                        Console.WriteLine("VID {0:X} PID {1:X}", enumDevice.Vid, enumDevice.Pid);
+                    }
+#endif
+
+#if DEBUG
                     Console.WriteLine("Getting HID device...");
+#endif
                     device = GetDevice();
                     if (device == null)
                     {
+#if DEBUG
                         Console.WriteLine("HID device not found");
+#endif
                         return;
-                    } else
-                    {
-                        Console.WriteLine("HID device found");
                     }
+#if DEBUG
+                    Console.WriteLine("HID device found");
+#endif
+
+                    // Don't understand this 100% yet but it was in the examples
+                    // Also for some godforsaken reason the library will only load "libusb-1.0" without ".dll" extension >_>
+                    // Also remember to copy over libusb to the build folder like with bass
+                    IUsbDevice wholeUsbDevice = device as IUsbDevice;
+                    if (!ReferenceEquals(wholeUsbDevice, null))
+                    {
+                        // This is a "whole" USB device. Before it can be used, 
+                        // the desired configuration and interface must be selected
+
+                        // Select config #1
+                        wholeUsbDevice.SetConfiguration(1);
+
+                        // Claim interface #0.
+                        wholeUsbDevice.ClaimInterface(0);
+                    }
+                    else
+                    {
+#if DEBUG
+                        Console.WriteLine("Not whole USB, not configuring");
+#endif
+                    }
+                }
+
+                if (reader == null)
+                {
+                    reader = device.OpenEndpointReader(GetReadEndpoint());
+                    if (reader == null)
+                    {
+#if DEBUG
+                        Console.WriteLine("Getting reader failed");
+#endif
+                        device.Close();
+                        return;
+                    }
+#if DEBUG
+                    Console.WriteLine("Obtained reader");
+#endif
                 }
 
                 lock (state)
@@ -138,17 +192,21 @@ namespace Ched.UI.Recording
                     }
                 }
                 active = true;
-                device.MonitorDeviceEvents = true;
-                device.ReadReport(Update);
+
+                reader.DataReceivedEnabled = true;
+                reader.DataReceived += Update;
             }
 
-            private void Update(HidReport report)
+            private void Update(object sender, EndpointDataEventArgs e)
             {
-                if (!active || device == null) return;
+                if (!active || reader == null) return;
 
-                // Console.WriteLine(String.Join("/", report.Data.Select(p => p.ToString())));
+                var reportData = e.Buffer.Take(e.Count).ToArray();
+#if DEBUG
+                Console.WriteLine(String.Join("/", reportData.Select(p => p.ToString())));
+#endif
 
-                var data = ProcessReport(report);
+                var data = ProcessReport(reportData);
 
                 lock (state)
                 {
@@ -157,16 +215,29 @@ namespace Ched.UI.Recording
                         state[i] = data[i];
                     }
                 }
-
-                device.ReadReport(Update);
             }
 
             public void Stop()
             {
                 active = false;
+                if (reader != null)
+                {
+                    reader.DataReceived -= Update;
+                    reader.DataReceivedEnabled = false;
+                    reader.Dispose();
+                    reader = null;
+                }
+
                 if (device != null)
                 {
-                    device.Dispose();
+                    IUsbDevice wholeUsbDevice = device as IUsbDevice;
+                    if (!ReferenceEquals(wholeUsbDevice, null))
+                    {
+                        wholeUsbDevice.ReleaseInterface(0);
+                        wholeUsbDevice.Close();
+                    }
+
+                    device.Close();
                     device = null;
                 }
             }
@@ -187,21 +258,25 @@ namespace Ched.UI.Recording
             private const int VendorId = 0x1973;
             private const int ProductId = 0x2001;
 
-            protected override HidDevice GetDevice()
+            protected override UsbDevice GetDevice()
             {
-                return HidDevices.Enumerate(VendorId, ProductId).FirstOrDefault();
+                return UsbDevice.OpenUsbDevice(new UsbDeviceFinder(VendorId, ProductId));
             }
 
-            protected override List<bool> ProcessReport(HidReport report)
+            protected override ReadEndpointID GetReadEndpoint() {
+                return ReadEndpointID.Ep01;
+            }
+
+            protected override List<bool> ProcessReport(byte[] reportData)
             {
-                if (report.Data.Length == 34)
+                if (reportData.Length == 34)
                 {
-                    var groundData = report.Data
+                    var groundData = reportData
                         .Skip(2)
                         .Select(p => p > 20)
                         .ToList();
                     var airData = Convert
-                        .ToString(report.Data[0], 2)
+                        .ToString(reportData[0], 2)
                         .PadLeft(6, '0')
                         .AsEnumerable()
                         .Reverse()
@@ -227,21 +302,26 @@ namespace Ched.UI.Recording
             private const int VendorId = 0x1ccf;
             private const int ProductId = 0x2333;
 
-            protected override HidDevice GetDevice()
+            protected override UsbDevice GetDevice()
             {
-                return HidDevices.Enumerate(VendorId, ProductId).FirstOrDefault();
+                return UsbDevice.OpenUsbDevice(new UsbDeviceFinder(VendorId, ProductId));
             }
 
-            protected override List<bool> ProcessReport(HidReport report)
+            protected override ReadEndpointID GetReadEndpoint()
             {
-                if (report.Data.Length == 36)
+                return ReadEndpointID.Ep04;
+            }
+
+            protected override List<bool> ProcessReport(byte[] reportData)
+            {
+                if (reportData.Length == 36)
                 {
-                    var groundData = report.Data
+                    var groundData = reportData
                         .Skip(4)
                         .Select(p => p > 20)
                         .ToList();
                     var airData = Convert
-                        .ToString(report.Data[3], 2)
+                        .ToString(reportData[3], 2)
                         .PadLeft(8, '0')
                         .AsEnumerable()
                         .Reverse()
@@ -261,19 +341,24 @@ namespace Ched.UI.Recording
             private const int VendorId = 0x1ccf;
             private const int ProductId = 0x2333;
 
-            protected override HidDevice GetDevice()
+            protected override UsbDevice GetDevice()
             {
-                return HidDevices.Enumerate(VendorId, ProductId).FirstOrDefault();
+                return UsbDevice.OpenUsbDevice(new UsbDeviceFinder(VendorId, ProductId));
             }
 
-            protected override List<bool> ProcessReport(HidReport report)
+            protected override ReadEndpointID GetReadEndpoint()
             {
-                if (report.Data.Length == 11)
+                return ReadEndpointID.Ep04;
+            }
+
+            protected override List<bool> ProcessReport(byte[] reportData)
+            {
+                if (reportData.Length == 11)
                 {
-                    var bitData = report.Data
+                    var bitData = reportData
                         .Skip(3)
                         .Select(p => Convert.ToString(p, 2).PadLeft(8, '0'))
-                        .SelectMany(p => p.AsEnumerable())
+                        .SelectMany(p => p.AsEnumerable().Reverse())
                         .Select(p => p == '1');
                     var groundData = bitData.Skip(10).Take(32).ToList();
                     var airData = bitData.Skip(4).Take(6).ToList();

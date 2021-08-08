@@ -334,6 +334,16 @@ namespace Ched.Drawing
                 dc.Graphics.FillRectangle(brush, rect);
             }
         }
+
+        public static void DrawRecorderAirUnderBackground(this DrawingContext dc, RectangleF rect)
+        {
+            Color color = dc.ColorProfile.RecorderAirUnderColor;
+
+            using (var brush = new SolidBrush(color))
+            {
+                dc.Graphics.FillRectangle(brush, rect);
+            }
+        }
     }
 
     public class SlideStepElement

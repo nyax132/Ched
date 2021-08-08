@@ -7,6 +7,9 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+#if DEBUG
+using System.Diagnostics;
+#endif
 
 using Ched.Core.Notes;
 using Ched.Core;
@@ -75,7 +78,12 @@ namespace Ched.UI
 
         public MainForm()
         {
-            DebugConsole.ShowConsoleWindow();
+#if DEBUG
+            if (!Debugger.IsAttached)
+            {
+                DebugConsole.ShowConsoleWindow();
+            }
+#endif
 
             InitializeComponent();
             Size = new Size(420, 700);
@@ -190,6 +198,8 @@ namespace Ched.UI
                     e.Cancel = true;
                     return;
                 }
+
+                Recorder.Cleanup();
 
                 ApplicationSettings.Default.Save();
                 File.WriteAllText(UserShortcutKeySourcePath, ShortcutManagerHost.UserShortcutKeySource.DumpShortcutKeys());

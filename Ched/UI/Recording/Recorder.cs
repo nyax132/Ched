@@ -62,6 +62,11 @@ namespace Ched.UI.Recording
             set { recordingMode = value; }
         }
 
+        public static void Cleanup()
+        {
+            RecorderInput.Cleanup();
+        }
+
         public Recorder()
         {
             PlaybackLanes = new List<PlaybackLane> { };

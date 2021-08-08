@@ -48,5 +48,6 @@ namespace Ched.Drawing
 
         public Color RecorderGroundColor { get; set; }
         public Color RecorderAirColor { get; set; }
+        public Color RecorderAirUnderColor { get; set; }
     }
 }
