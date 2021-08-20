@@ -199,8 +199,8 @@ namespace Ched.Components.Exporter
                                     steps[i] = new
                                     {
                                         Tick = steps[i].Tick,
-                                        LaneIndex = slide.Note.StartLaneIndex,
-                                        Width = slide.Note.StartWidth,
+                                        LaneIndex = steps[i].LaneIndex,
+                                        Width = steps[i].Width,
                                         Type = "5"
                                     };
                                 }
