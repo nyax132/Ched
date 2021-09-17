@@ -1,62 +1,10 @@
-# ChedPlus
+# このプロジェクトについて
 
-[Ched](https://github.com/paralleltree/Ched) with extra features. Respect [@paralleltree](https://twitter.com/paralleltree). Download [here](https://github.com/4yn/Ched/releases).
+このプロジェクトは[Ched](https://github.com/paralleltree/Ched) の派生プロジェクトである、[ChedPlus](https://github.com/4yn/Ched)を派生したものになります。
+基本的には自分のプログラム学習に使用したり、機能の追加をします。
+4ynさん、paralleltreeさんに感謝ですm(_ _)m
 
-- Disabled double right click toggle between edit and select mode
-- Right click in edit mode behaves like erase
-- Middle click in edit mode behaves like select
-- Added hotkeys (Preview using [keyboard layout editor](http://www.keyboard-layout-editor.com/))
-
-  ![hotkeys](./resources/keyboard-layout.png)
-
-- Added playfield autoscroll when previewing
-- Changed tick sound to ksm tick sound
-- Increased note thickness
-- Prevent air-action notes from overlapping other notes
-
-  ![note thickness](./resources/note-thickness.png)
-
-- Pre-included .sus import from [sus2img](https://github.com/paralleltree/sus2img)
-- Added bezier curve note with gray color
-
-  ![beizers](./resources/beizers.png)
-
-  - Import/export with .sus works
-  - Use at most 1 curve between every 2 slide steps
-  - If two "SLIDE CURVE" notes are next to each other, the later one will default to a "SLIDE STEP" note with black color and .sus export will also automatically convert to "SLIDE STEP"
-
-  ![duplicate curve](./resources/duplicate-curve.png)
-
-- Added scroll up/down shortcut buttons
-- Updated to latest upstream features as of [Ched 3.1.0](https://github.com/paralleltree/Ched/releases/tag/v3.1.0.0)
-  - Shortcut editor
-  - Export hotkey (Ctrl + E)
-- Made sus export distinct from upstream Ched
-- Added file association, double clicking on .chs files will open the editor
-- Added 'Play at half speed' option in play menu
-- Switched to ManagedBass audio library
-- Implemented ExTap notes with downwards and central flourishes + import/export function
-
-  ![extap](./resources/extap.png)
-
-- Pulled chinese translation from [kami-poi's fork](https://github.com/kami-poi/Ched/commit/38838d692e495c722ac10a4492da311bec9c8010)
-- Fix gradient bug of tap notes at large measure numbers (left is new, right is old)
-
-  ![gradient bug](./resources/gradientbug.png)
-
-- **Recorder!** Play something on your controller when previewing your chart and it will show up on the playfield. Make charting easier!
-
-  ![recorder](./resources/recorder.gif)
-
-  - Works with Yuancon, Tasoller (I-SAY-NYA-O and 2.0 firmware both work), [iPad/brokenithm-kb](https://github.com/4yn/brokenithm-kb/) (use the Yuancon keyboard option) or just use your keyboard (Tasoller keyboard option recommended)
-
-  ![recorder options](./resources/recorder-options.png)
-
-  - Remember to enable "Recoder (Add/Overwrite)" and select your input device in the options
-
-# Original Readme
-
-[![Build status](https://ci.appveyor.com/api/projects/status/pq1lght43m7ytlv1?svg=true)](https://ci.appveyor.com/project/paralleltree/ched)
+**(ここから下はすべてオリジナルの文章になります。)**
 
 某スライドしてヘドバンする音ゲーの譜面エディタ
 
