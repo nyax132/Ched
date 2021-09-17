@@ -113,6 +113,8 @@ namespace Ched.UI
             PreviewManager = new SoundPreviewManager(this);
             PreviewManager.IsStopAtLastNote = ApplicationSettings.Default.IsPreviewAbortAtLastNote;
             PreviewManager.IsPlayAtHalfSpeed = ApplicationSettings.Default.IsPlayAtHalfSpeed;
+
+
             PreviewManager.TickUpdated += (s, e) => Recorder.Update(e.Tick);
             PreviewManager.TickUpdated += (s, e) => NoteView.CurrentTick = e.Tick;
             PreviewManager.ExceptionThrown += (s, e) => MessageBox.Show(this, ErrorStrings.PreviewException, Program.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -276,6 +278,12 @@ namespace Ched.UI
                 Program.DumpExceptionTo(ex, "file_exception.json");
                 LoadEmptyBook();
             }
+        }
+
+        private void OpenVolumeChangeDialog()
+        {
+            VolumeChange dialog = new VolumeChange();
+            dialog.ShowDialog();
         }
 
         protected void LoadBook(ScoreBook book)
@@ -919,7 +927,7 @@ namespace Ched.UI
             var insertHighSpeedItem = shortcutItemBuilder.BuildItem(Commands.InsertHighSpeedChange, MainFormStrings.HighSpeed);
             var insertTimeSignatureItem = shortcutItemBuilder.BuildItem(Commands.InsertTimeSignatureChange, MainFormStrings.TimeSignature);
 
-            var insertMenuItems = new ToolStripItem[] { insertBpmItem, insertHighSpeedItem, insertTimeSignatureItem };
+            var insertMenuItems = new ToolStripItem[] { insertBpmItem, insertHighSpeedItem, insertTimeSignatureItem};
 
             var isAbortAtLastNoteItem = new ToolStripMenuItem(MainFormStrings.AbortAtLastNote, null, (s, e) =>
             {
@@ -959,6 +967,10 @@ namespace Ched.UI
             PreviewManager.Finished += (s, e) => isPlayAtHalfSpeedItem.Enabled = true;
 
             var playItem = shortcutItemBuilder.BuildItem(Commands.PlayPreview, MainFormStrings.Play);
+            var VolumeItem = new ToolStripMenuItem("音量", null, (s, e) =>
+            {
+                OpenVolumeChangeDialog();
+            });
 
             var stopItem = new ToolStripMenuItem(MainFormStrings.Stop, null, (s, e) =>
             {
@@ -968,7 +980,7 @@ namespace Ched.UI
             var playMenuItems = new ToolStripItem[]
             {
                 playItem, stopItem, new ToolStripSeparator(),
-                isAbortAtLastNoteItem, isFollowWhenPlayingItem, isPlayAtHalfSpeedItem
+                isAbortAtLastNoteItem, isFollowWhenPlayingItem, isPlayAtHalfSpeedItem, VolumeItem
             };
 
             var hideRecorderItem = new ToolStripMenuItem(MainFormStrings.RecordHide, null, (s, e) =>
@@ -1108,7 +1120,7 @@ namespace Ched.UI
                 // PreviewManager初期化後じゃないといけないのダメ設計でしょ
                 new ToolStripMenuItem(MainFormStrings.PlayMenu, null, playMenuItems) { Enabled = PreviewManager.IsSupported },
                 new ToolStripMenuItem(MainFormStrings.RecordMenu, null, recorderMenuItems),
-                new ToolStripMenuItem(MainFormStrings.HelpMenu, null, helpMenuItems)
+                new ToolStripMenuItem(MainFormStrings.HelpMenu, null, helpMenuItems),
             });
             return menu;
         }

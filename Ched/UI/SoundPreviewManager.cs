@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,7 +51,10 @@ namespace Ched.UI
             }
         }
         private double PlaySpeed { get; set; }
-
+        public double ClapVolume { get; set; } = 0.5;
+        public double MusicVolume { get; set; } = 0.5;
+        public double ClapSoundVolumeGet() => double.Parse(ConfigurationManager.AppSettings["ClapVolume"]);
+        public double MusicSoundVolumeGet() => double.Parse(ConfigurationManager.AppSettings["MusicVolume"]);
         public SoundPreviewManager(Control syncControl)
         {
             SyncControl = syncControl;
@@ -62,9 +66,11 @@ namespace Ched.UI
                 ExceptionThrown?.Invoke(this, EventArgs.Empty);
             });
         }
-
         public bool Start(ISoundPreviewContext context, int startTick)
         {
+            ClapVolume = ClapSoundVolumeGet();
+            MusicVolume = MusicSoundVolumeGet();
+
             if (Playing) throw new InvalidOperationException();
             if (context == null) throw new ArgumentNullException("context");
             PreviewContext = context;
@@ -102,7 +108,9 @@ namespace Ched.UI
                     System.Threading.Thread.Sleep(TimeSpan.FromSeconds(headGap));
                 }
                 if (!Playing) return;
-                SoundManager.Play(context.MusicSource.FilePath, startTime + context.MusicSource.Latency + headGap, PlaySpeed);
+
+                //音楽再生
+                SoundManager.Play(context.MusicSource.FilePath, startTime + context.MusicSource.Latency + headGap, PlaySpeed , MusicVolume);
             })
             .ContinueWith(p =>
             {
@@ -151,7 +159,8 @@ namespace Ched.UI
                 TickElement = TickElement.Next;
             }
 
-            SoundManager.Play(ClapSource.FilePath);
+            //ノーツ音再生
+            SoundManager.Play(ClapSource.FilePath , ClapVolume);
         }
 
         private int GetLatencyTick(double latency, double bpm)

@@ -55,15 +55,15 @@ namespace Ched.UI
             }
         }
 
-        public void Play(string path)
+        public void Play(string path , double volume)
         {
-            Play(path, 0, 1.0);
+            Play(path, 0, 1.0, volume);
         }
 
-        public void Play(string path, double offset, double speed)
+        public void Play(string path, double offset, double speed, double volume)
         {
             CheckSupported();
-            Task.Run(() => PlayInternal(path, offset, speed))
+            Task.Run(() => PlayInternal(path, offset, speed , volume))
                 .ContinueWith(p =>
                 {
                     if (p.Exception != null)
@@ -74,7 +74,7 @@ namespace Ched.UI
                 });
         }
 
-        private void PlayInternal(string path, double offset, double speed)
+        private void PlayInternal(string path, double offset, double speed, double volume)
         {
             lock (Players)
             {
@@ -82,6 +82,7 @@ namespace Ched.UI
                 var player = Players[path];
                 player.Position = TimeSpan.FromSeconds(offset);
                 player.Tempo = speed * 100 - 100;
+                player.Volume = volume;
                 player.Play();
             }
         }

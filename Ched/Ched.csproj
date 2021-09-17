@@ -97,6 +97,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.Composition.registration" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Reactive, Version=5.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Reactive.5.0.0\lib\net472\System.Reactive.dll</HintPath>
@@ -219,6 +220,12 @@
     <Compile Include="UI\Shortcuts\ShortcutKeySource.cs" />
     <Compile Include="UI\Shortcuts\ShortcutManager.cs" />
     <Compile Include="UI\Shortcuts\ToolStripItemBuilder.cs" />
+    <Compile Include="UI\VolumeChange.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\VolumeChange.Designer.cs">
+      <DependentUpon>VolumeChange.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Windows\Behaviors\HideWindowCloseButtonBehavior.cs" />
     <Compile Include="UI\Windows\Behaviors\InitialFocusBehavior.cs" />
     <Compile Include="UI\Windows\Behaviors\OpenFileBehavior.cs" />
@@ -335,6 +342,7 @@
     <EmbeddedResource Include="Localization\MainFormStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>MainFormStrings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Localization\MainFormStrings.zh.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
@@ -412,6 +420,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\VersionInfoForm.zh.resx">
       <DependentUpon>VersionInfoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\VolumeChange.resx">
+      <DependentUpon>VolumeChange.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
   </ItemGroup>
@@ -501,12 +512,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\clipboard-paste.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ContentWithTargetPath Include="Resources\guide.mp3">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>guide.mp3</TargetPath>
-    </ContentWithTargetPath>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\scissors-blue.png" />
