@@ -280,7 +280,7 @@ namespace Ched.UI
             }
         }
 
-        private void OpenVolumeChangeDialog()
+        protected void OpenVolumeChangeDialog()
         {
             VolumeChange dialog = new VolumeChange();
             dialog.ShowDialog();
@@ -499,6 +499,7 @@ namespace Ched.UI
                 return;
             }
 
+            //もし再生中だったら
             if (PreviewManager.Playing)
             {
                 PreviewManager.Stop();

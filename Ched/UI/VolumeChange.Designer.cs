@@ -39,7 +39,7 @@ namespace Ched.UI
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 9);
+            this.label1.Location = new System.Drawing.Point(57, 12);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(28, 12);
             this.label1.TabIndex = 0;
@@ -48,7 +48,7 @@ namespace Ched.UI
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 34);
+            this.label2.Location = new System.Drawing.Point(12, 39);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(73, 12);
             this.label2.TabIndex = 1;
@@ -88,6 +88,7 @@ namespace Ched.UI
             this.Controls.Add(this.Enterbutton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "VolumeChange";
