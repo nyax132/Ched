@@ -51,8 +51,8 @@ namespace Ched.UI
             }
         }
         private double PlaySpeed { get; set; }
-        public double ClapVolume { get; set; } = 0.5;
-        public double MusicVolume { get; set; } = 0.5;
+        private double ClapVolume { get; set; } = 0.5;
+        private double MusicVolume { get; set; } = 0.5;
         public double ClapSoundVolumeGet() => double.Parse(ConfigurationManager.AppSettings["ClapVolume"]);
         public double MusicSoundVolumeGet() => double.Parse(ConfigurationManager.AppSettings["MusicVolume"]);
         public SoundPreviewManager(Control syncControl)
